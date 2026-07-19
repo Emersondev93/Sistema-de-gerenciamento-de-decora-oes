@@ -23,7 +23,7 @@ public class Sistema {
         System.out.println("CADASTRO ");
         System.out.print("Nome: ");
         String nome = sc.nextLine();
-        System.out.print("Telefone:");
+        System.out.print("Telefone: ");
         String telefone = sc.nextLine();
         System.out.print("Rua: ");
         String rua = sc.nextLine();
@@ -80,7 +80,7 @@ public class Sistema {
                 }
                 break;
             case 3:
-                System.out.print("Digite o telefone");
+                System.out.print("Digite o telefone: ");
                 String telefoneBusca = sc.nextLine();
                 for (Cliente cliente : clientes) {
                     if (telefoneBusca.equals(cliente.getTelefone())) {
@@ -111,20 +111,24 @@ public class Sistema {
         }
         int numAleatorio = random.nextInt(1000);
         String idEvento = "ev" + numAleatorio;
-        System.out.print("Data (dd/MM/aaaa): ");
+        System.out.print("Data do evento (dd/MM/aaaa): ");
         String data = sc.next();
         LocalDate dataFormatada = LocalDate.parse(data, fmt);
+        sc.nextLine();
         System.out.print("Tema: ");
         String tema = sc.nextLine();
         System.out.print("Valor: ");
         double valor = sc.nextDouble();
-
         Evento novoEvento = new Evento(idEvento, dataFormatada, tema, valor, cliente);
         eventos.add(novoEvento);
-        System.out.println("Evento " + idEvento + " cadastrado com sucesso ");
+        System.out.println("Evento " + idEvento + " cadastrado com sucesso! ");
     }
-    public List<Evento> listarEvento(){return new ArrayList<>(eventos);}
-    public void removerEvento(Evento evento){
+
+    public List<Evento> listarEvento() {
+        return new ArrayList<>(eventos);
+    }
+
+    public void removerEvento(Evento evento) {
         System.out.print("Digite o ID o evento: ");
         String idRemover = sc.next();
         eventos.removeIf(e -> e.getIdEvento().equals(idRemover));

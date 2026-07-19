@@ -45,4 +45,13 @@ public class Cliente {
         this.endereco = endereco;
     }
 
+    @Override
+    public String toString() {
+        return "CLIENTE"
+                + "\nID do cliente:" + idCliente
+                + "\nNome: " + nome
+                + "\nTelefone: " + telefone
+                + "\nEndereco: " + endereco
+                + "\n==========================================";
+    }
 }

@@ -64,5 +64,16 @@ public class Evento {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
+
+    @Override
+    public String toString() {
+        return "EVENTO "
+                + "\nID do evento: " + idEvento
+                + "\nData: " + data
+                + "\nTema: " + tema
+                + "\nValor: " + valor
+                + "\n" + cliente
+                + "=======================================";
+    }
 }
 
