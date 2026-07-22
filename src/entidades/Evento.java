@@ -1,6 +1,7 @@
 package entidades;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Evento {
     private String idEvento;
@@ -20,11 +21,6 @@ public class Evento {
     public String getIdEvento() {
 
         return idEvento;
-    }
-
-    public void setIdEvento(String idEvento) {
-        this.idEvento = idEvento;
-
     }
 
     public LocalDate getData() {
@@ -67,9 +63,10 @@ public class Evento {
 
     @Override
     public String toString() {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return "EVENTO "
                 + "\nID do evento: " + idEvento
-                + "\nData: " + data
+                + "\nData: " + data.format(fmt)
                 + "\nTema: " + tema
                 + "\nValor: " + valor
                 + "\n" + cliente

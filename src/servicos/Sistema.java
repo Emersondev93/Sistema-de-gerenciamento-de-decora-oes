@@ -12,12 +12,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Sistema {
-    Scanner sc = new Scanner(System.in);
-    Random random = new Random();
+    private Scanner sc = new Scanner(System.in);
+    private Random random = new Random();
     private List<Cliente> clientes = new ArrayList<>();
     private List<Evento> eventos = new ArrayList<>();
-    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    int idCliente = 1;
+    private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private int idCliente = 1;
 
     public void cadastrarCliente() {
         System.out.println("CADASTRO ");
@@ -56,7 +56,7 @@ public class Sistema {
     public Cliente buscaPorMenu() {
         System.out.println("Digite o número correspondente ao tipo de busca: ");
         System.out.println("1 - Busca por ID.\n2 - Busca por nome. \n3 - Busca por telefone.");
-        System.out.print("Opção: ");
+        System.out.print("Opção de busca: ");
         int opcao = sc.nextInt();
         sc.nextLine();
         switch (opcao) {
@@ -133,4 +133,5 @@ public class Sistema {
         String idRemover = sc.next();
         eventos.removeIf(e -> e.getIdEvento().equals(idRemover));
     }
+
 }
