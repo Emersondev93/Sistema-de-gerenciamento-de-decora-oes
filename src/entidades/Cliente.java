@@ -31,11 +31,9 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "CLIENTE"
-                + "\nID do cliente:" + idCliente
+        return  "ID do cliente: " + idCliente
                 + "\nNome: " + nome
                 + "\nTelefone: " + telefone
-                + "\nEndereco: " + endereco
-                + "\n==========================================";
+                + "\nEndereco: " + endereco;
     }
 }

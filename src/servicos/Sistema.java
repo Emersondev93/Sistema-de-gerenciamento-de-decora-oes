@@ -3,6 +3,7 @@ package servicos;
 import entidades.Cliente;
 import entidades.Endereco;
 import entidades.Evento;
+import excecoes.DominioDeExcecao;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +21,7 @@ public class Sistema {
     private int idCliente = 1;
 
     public void cadastrarCliente() {
-        System.out.println("CADASTRO ");
+        System.out.println("================CADASTRAR CLIENTE================ ");
         System.out.print("Nome: ");
         String nome = sc.nextLine();
         System.out.print("Telefone: ");
@@ -43,6 +44,7 @@ public class Sistema {
     }
 
     public List<Cliente> listarClientes() {
+        System.out.println("================LISTA DE CLIENTES================");
         return new ArrayList<>(clientes);
     }
 
@@ -54,14 +56,14 @@ public class Sistema {
     }
 
     public Cliente buscaPorMenu() {
-        System.out.println("Digite o número correspondente ao tipo de busca: ");
+        System.out.println("Buscar cliente - Digite o número que corresponde ao tipo de busca: ");
         System.out.println("1 - Busca por ID.\n2 - Busca por nome. \n3 - Busca por telefone.");
         System.out.print("Opção de busca: ");
         int opcao = sc.nextInt();
         sc.nextLine();
         switch (opcao) {
             case 1:
-                System.out.print("Digite o ID: ");
+                System.out.print("Digite o ID do cliente: ");
                 int idBusca = sc.nextInt();
                 sc.nextLine();
                 for (Cliente cliente : clientes) {
@@ -96,24 +98,53 @@ public class Sistema {
         return null;
     }
 
-    public void removerCliente(Cliente cliente) {
+    public void removerCliente() {
+        System.out.println("==========EXCLUIR CADASTRO==========");
         System.out.print("Digite o ID do cliente: ");
         int idRemover = sc.nextInt();
-        clientes.removeIf(c -> c.getId() == idRemover);
+
+        Cliente clienteEncontrado = null;
+
+        for (Cliente c : clientes) {
+            if (idRemover == c.getId()) {
+                clienteEncontrado = c;
+                break;
+            }
+        }
+        if (clienteEncontrado != null) {
+            clientes.remove(clienteEncontrado);
+            System.out.println(clienteEncontrado.getNome() + " excluido do cadastro.");
+        } else {
+            System.out.println("O id " + idRemover + " não foi encontrado.");
+        }
+
     }
 
-    public void cadastrarEvento() {
-        System.out.println("Contratante: ");
+    public void cadastrarEvento() throws DominioDeExcecao {
+        System.out.println("================AGENDAR DECORAÇÃO================");
         Cliente cliente = buscaPorMenu();
         if (cliente == null) {
-            System.out.println("Erro! Cliente não encontrado no cadastro.");
+            System.out.println("Cliente não encontrado no cadastro.");
             return;
         }
         int numAleatorio = random.nextInt(1000);
         String idEvento = "ev" + numAleatorio;
-        System.out.print("Data do evento (dd/MM/aaaa): ");
-        String data = sc.next();
-        LocalDate dataFormatada = LocalDate.parse(data, fmt);
+        LocalDate dataFormatada;
+        boolean validacao = false;
+        do {
+            System.out.print("Data do evento (dd/MM/aaaa): ");
+            String data = sc.next();
+            dataFormatada = LocalDate.parse(data, fmt);
+            LocalDate dataAtual = LocalDate.now();
+            validacao = false;
+            if (dataFormatada.isBefore(dataAtual)) {
+                System.out.println("A data do evento deve ser posterior a data atual.");
+            } else {
+                validacao = true;
+            }
+        }
+        while (!validacao);
+
         sc.nextLine();
         System.out.print("Tema: ");
         String tema = sc.nextLine();
@@ -125,10 +156,12 @@ public class Sistema {
     }
 
     public List<Evento> listarEvento() {
+        System.out.println("===========DECORAÇÕES AGENDADAS============");
         return new ArrayList<>(eventos);
     }
 
-    public void removerEvento(Evento evento) {
+    public void removerEvento() {
+        System.out.println("================CANCELAR AGENDAMENTO================");
         System.out.print("Digite o ID o evento: ");
         String idRemover = sc.next();
         eventos.removeIf(e -> e.getIdEvento().equals(idRemover));

@@ -69,8 +69,7 @@ public class Evento {
                 + "\nData: " + data.format(fmt)
                 + "\nTema: " + tema
                 + "\nValor: " + valor
-                + "\n" + cliente
-                + "=======================================";
+                + "\n" + cliente;
     }
 }
 
