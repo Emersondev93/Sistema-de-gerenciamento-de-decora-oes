@@ -138,7 +138,7 @@ public class Sistema {
             LocalDate dataAtual = LocalDate.now();
             validacao = false;
             if (dataFormatada.isBefore(dataAtual)) {
-                System.out.println("A data do evento deve ser posterior a data atual.");
+                System.out.println("A data do evento deve ser posterior a data de hoje.");
             } else {
                 validacao = true;
             }
@@ -165,6 +165,86 @@ public class Sistema {
         System.out.print("Digite o ID o evento: ");
         String idRemover = sc.next();
         eventos.removeIf(e -> e.getIdEvento().equals(idRemover));
+    }
+
+    public void alterarDadosCliente() {
+        System.out.println("===================ALTERAR INFORMAÇÕES DO CLIENTE==================");
+        System.out.print("Digite o ID do cliente para alterar suas informações: ");
+        int alterarDados = sc.nextInt();
+        sc.nextLine();
+        for (Cliente c : clientes) {
+            if (alterarDados == c.getId()) {
+                System.out.println("Alterar informações de " + c.getNome() + "ID - " + c.getId());
+                System.out.println("Escolha informação a ser alterada: " +
+                        "\n1 - Nome " +
+                        "\n2 - Telefone" +
+                        "\n3 - Rua" +
+                        "\n4 - Número" +
+                        "\n5 - Bairro" +
+                        "\n6 - Cidade" +
+                        "\n7 - Cep" +
+                        "\n8 - Voltar");
+                System.out.print("Digite o número do campo que deseja alterar: ");
+                int opcao = sc.nextInt();
+                sc.nextLine();
+
+                boolean alterado = false;
+                switch (opcao) {
+                    case 1:
+                        System.out.println("Nome atual: " + c.getNome());
+                        System.out.print("Novo nome: ");
+                        c.setNome(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 2:
+                        System.out.println("Telefone atual: " + c.getTelefone());
+                        System.out.print("Novo telefone: ");
+                        c.setTelefone(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 3:
+                        System.out.println("Rua atual: " + c.getEndereco().getRua());
+                        System.out.print("Nova rua: ");
+                        c.getEndereco().setRua(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 4:
+                        System.out.println("Número atual: " + c.getEndereco().getNumero());
+                        System.out.print("Novo número: ");
+                        c.getEndereco().setNumero(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 5:
+                        System.out.println("Bairro atual: " + c.getEndereco().getBairro());
+                        System.out.print("Novo bairro: ");
+                        c.getEndereco().setBairro(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 6:
+                        System.out.println("Cidade atual: " + c.getEndereco().getCidade());
+                        System.out.print("Nova cidade: ");
+                        c.getEndereco().setCidade(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 7:
+                        System.out.println("Cep atual: " + c.getEndereco().getCep());
+                        System.out.print("Novo cep: ");
+                        c.getEndereco().setCep(sc.nextLine());
+                        alterado = true;
+                        break;
+                    case 8:
+                        break;
+                    default:
+                        System.out.println("Opção inválida.");
+                }
+                if (alterado) {
+                    System.out.println("Alterações feitas com sucesso!");
+                }
+                break;
+            } else {
+                System.out.println("Não foi encontrado cliente com este ID.");
+            }
+        }
     }
 
 }

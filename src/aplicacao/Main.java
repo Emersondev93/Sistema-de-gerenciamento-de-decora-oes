@@ -1,9 +1,12 @@
 package aplicacao;
 
+import entidades.Cliente;
+import entidades.Evento;
 import excecoes.DominioDeExcecao;
 import servicos.Sistema;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -16,18 +19,21 @@ public class Main {
             Sistema sistema = new Sistema();
 
             int opcao;
-            System.out.println("============SISTEMA DE GERENCIAMENTO PARA EVENTOS==============");
+            System.out.println(" ".repeat(50) + "============SISTEMA DE GERENCIAMENTO PARA EVENTOS==============");
             do {
-                System.out.println("1 - Cadastrar cliente" +
+                System.out.println("MENU PRINCIPAL" +
+                        "\n1 - Cadastrar cliente" +
                         "\n2 - Excluir cadastro" +
                         "\n3 - Lista de clientes" +
-                        "\n4 - Agendar decoração" +
-                        "\n5 - Decoraçoes Agendadas" +
-                        "\n6 - Cancelar agendamento" +
-                        "\n7 - Sair");
+                        "\n4 - Alterar informações de cliente" +
+                        "\n5 - Agendar decoração" +
+                        "\n6 - Decorações Agendadas" +
+                        "\n7 - Cancelar agendamento" +
+                        "\n8 - Sair");
                 System.out.print("Digite o número da opção escolhida: ");
                 opcao = sc.nextInt();
                 sc.nextLine();
+                System.out.println();
                 switch (opcao) {
                     case 1:
                         sistema.cadastrarCliente();
@@ -36,28 +42,39 @@ public class Main {
                         sistema.removerCliente();
                         break;
                     case 3:
-                        System.out.println(sistema.listarClientes());
+                        List<Cliente> listarClientes = sistema.listarClientes();
+                        for (Cliente c : listarClientes) {
+                            System.out.println(c);
+                            System.out.println();
+                        }
                         break;
                     case 4:
-                        sistema.cadastrarEvento();
+                        sistema.alterarDadosCliente();
                         break;
                     case 5:
-                        System.out.println(sistema.listarEvento());
+                        sistema.cadastrarEvento();
                         break;
                     case 6:
-                        sistema.removerEvento();
+                        List<Evento> listaEventos = sistema.listarEvento();
+                        for (Evento e : listaEventos){
+                            System.out.println(e);
+                            System.out.println();
+                        }
                         break;
                     case 7:
+                        sistema.removerEvento();
+                        break;
+                    case 8:
                         System.out.println("Saindo...");
                         break;
                     default:
                         System.out.println("Opção inválida.");
                 }
                 System.out.println();
-            } while (opcao != 7);
+            } while (opcao != 8);
         } catch (InputMismatchException erro) {
             System.out.println("Erro. Tipo de caractere inválido! ");
-        }catch (DominioDeExcecao erro){
+        } catch (DominioDeExcecao erro) {
             System.out.println("Erro. " + erro.getMessage());
         }
         sc.close();
