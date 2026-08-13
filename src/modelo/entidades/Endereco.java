@@ -1,19 +1,25 @@
-package entidades;
+package modelo.entidades;
 
 public class Endereco {
+    private Integer id;
     private String rua;
     private String numero;
     private String bairro;
     private String cidade;
     private String cep;
 
-    public Endereco(String rua, String numero, String bairro, String cidade, String cep) {
+    public Endereco(Integer id, String rua, String numero, String bairro, String cidade, String cep) {
+        this.id = id;
         this.rua = rua;
         this.numero = numero;
         this.bairro = bairro;
         this.cidade = cidade;
         this.cep = cep;
     }
+
+    public Integer getId() { return id; }
+
+    public void setId(Integer id) { this.id = id; }
 
     public String getRua() {
         return rua;

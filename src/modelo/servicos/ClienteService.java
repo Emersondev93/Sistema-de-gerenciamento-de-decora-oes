@@ -1,7 +1,7 @@
-package servicos;
+package modelo.servicos;
 
-import entidades.Cliente;
-import entidades.Endereco;
+import modelo.entidades.Cliente;
+import modelo.entidades.Endereco;
 
 import java.util.ArrayList;
 import java.util.List;

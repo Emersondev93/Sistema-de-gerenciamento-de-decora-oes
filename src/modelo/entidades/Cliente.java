@@ -1,21 +1,23 @@
-package entidades;
+package modelo.entidades;
 
 public class Cliente {
-    private int idCliente;
+    private Integer id;
     private String nome;
     private String telefone;
     private Endereco endereco;
 
-    public Cliente(int idCliente, String nome, String telefone, Endereco endereco) {
-        this.idCliente = idCliente;
+    public Cliente(Integer id, String nome, String telefone, Endereco endereco) {
+        this.id = id;
         this.nome = nome;
         this.telefone = telefone;
         this.endereco = endereco;
     }
 
-    public int getId() {
-        return idCliente;
+    public Integer getId() {
+        return id;
     }
+
+    public void setId(Integer id) { this.id = id; }
 
     public String getNome() {
         return nome;
@@ -43,7 +45,7 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return  "ID do cliente: " + idCliente
+        return "ID do cliente: " + id
                 + "\nNome: " + nome
                 + "\nTelefone: " + telefone
                 + "\nEndereco: " + endereco;

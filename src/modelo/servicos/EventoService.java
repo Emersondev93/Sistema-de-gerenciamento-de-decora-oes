@@ -1,7 +1,7 @@
-package servicos;
+package modelo.servicos;
 
-import entidades.Cliente;
-import entidades.Evento;
+import modelo.entidades.Cliente;
+import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
 
 import java.time.LocalDate;

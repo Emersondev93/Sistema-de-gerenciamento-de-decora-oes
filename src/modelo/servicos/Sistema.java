@@ -1,8 +1,8 @@
-package servicos;
+package modelo.servicos;
 
-import entidades.Cliente;
-import entidades.Endereco;
-import entidades.Evento;
+import modelo.entidades.Cliente;
+import modelo.entidades.Endereco;
+import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
 
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class Sistema {
         String cidade = sc.nextLine();
         System.out.print("Cep: ");
         String cep = sc.nextLine();
-        Endereco endereco = new Endereco(rua, numero, bairro, cidade, cep);
+        Endereco endereco = new Endereco(null, rua, numero, bairro, cidade, cep);
         Cliente cliente = clienteService.cadastrarCliente(nome, telefone, endereco);
         System.out.println("Cliente cadastrado com sucesso! ID: " + cliente.getId());
     }
