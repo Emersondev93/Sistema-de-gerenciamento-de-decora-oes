@@ -1,57 +1,47 @@
 package modelo.servicos;
 
+import modelo.dao.ClienteDao;
+import modelo.dao.EnderecoDao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
-
-import java.util.ArrayList;
+import modelo.impl.ClienteDaoJDBC;
+import modelo.impl.EnderecoDaoJDBC;
 import java.util.List;
 
 public class ClienteService {
-    private List<Cliente> clientes = new ArrayList<>();
-    private int idCliente = 1;
+    private ClienteDao clienteDao = new ClienteDaoJDBC();
+    private EnderecoDao enderecoDao = new EnderecoDaoJDBC();
 
     public Cliente cadastrarCliente(String nome, String telefone, Endereco endereco) {
-        Cliente cliente = new Cliente(idCliente, nome, telefone, endereco);
-        clientes.add(cliente);
-        idCliente++;
+        enderecoDao.inserir(endereco);
+
+        Cliente cliente = new Cliente(null, nome, telefone, endereco);
+
+        clienteDao.inserir(cliente);
+
         return cliente;
     }
 
     public List<Cliente> listarClientes() {
-        return new ArrayList<>(clientes);
+        return clienteDao.buscarTodos();
     }
 
     public Cliente buscarPorId(int id) {
-        for (Cliente c : clientes) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
+        return clienteDao.buscaPorId(id);
     }
 
-    public Cliente buscarPorNome(String nome) {
-        for (Cliente c : clientes) {
-            if (nome.equals(c.getNome())) {
-                return c;
-            }
-        }
-        return null;
+    public List<Cliente> buscarPorNome(String nome) {
+        return clienteDao.buscaPorNome(nome);
     }
 
     public Cliente buscarPorTelefone(String telefone) {
-        for (Cliente c : clientes) {
-            if (telefone.equals(c.getTelefone())) {
-                return c;
-            }
-        }
-        return null;
+        return clienteDao.buscaPortelefone(telefone);
     }
 
     public Cliente removerCliente(int id) {
-        Cliente encontrado = buscarPorId(id);
+        Cliente encontrado = clienteDao.buscaPorId(id);
         if (encontrado != null) {
-            clientes.remove(encontrado);
+            clienteDao.excluirPorId(id);
         }
         return encontrado;
     }

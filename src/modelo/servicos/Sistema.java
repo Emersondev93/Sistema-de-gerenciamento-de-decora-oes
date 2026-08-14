@@ -62,8 +62,29 @@ public class Sistema {
             case 2:
                 System.out.print("Digite o nome: ");
                 String nomeBusca = sc.nextLine();
-                encontrado = clienteService.buscarPorNome(nomeBusca);
+
+                List<Cliente> clientesEncontrados = clienteService.buscarPorNome(nomeBusca);
+
+                if (clientesEncontrados.isEmpty()) {
+                    System.out.println("Nenhum cliente encontrado. ");
+                } else if (clientesEncontrados.size() == 1) {
+                    encontrado = clientesEncontrados.get(0);
+                } else {
+                    System.out.println("\nClientes encontrados: ");
+
+                    for (Cliente cliente : clientesEncontrados) {
+                        System.out.println("ID: " + cliente.getId()
+                                + " - Nome: " + cliente.getNome()
+                                + " - Telefone: " + cliente.getTelefone());
+                    }
+                    System.out.println("\nDigite o ID do cliente desejado: ");
+                    int idEscolhido = sc.nextInt();
+                    sc.nextLine();
+                    encontrado = clienteService.buscarPorId(idEscolhido);
+                }
+
                 break;
+
             case 3:
                 System.out.print("Digite o telefone: ");
                 String telefoneBusca = sc.nextLine();

@@ -11,7 +11,11 @@ public interface ClienteDao {
 
     void excluirPorId(Integer id);
 
-    Cliente buscarPorId(Integer id);
+    Cliente buscaPorId(Integer id);
+
+    List<Cliente> buscaPorNome(String nome);
+
+    Cliente buscaPortelefone(String telefone);
 
     List<Cliente> buscarTodos();
 }

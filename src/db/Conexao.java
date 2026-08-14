@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Conexao {
-    private static Connection conexao = null;
-
 
     private static Properties loadProperties() {
         Properties props = new Properties();
@@ -22,31 +20,17 @@ public class Conexao {
     }
 
     public static Connection getConnection() {
-        if (conexao == null) {
             try {
                 Properties props = loadProperties();
                 String url = props.getProperty("dburl");
                 String usuario = props.getProperty("user");
                 String senha = props.getProperty("password");
 
-                conexao = DriverManager.getConnection(url, usuario, senha);
-            } catch (SQLException e) {
-                throw new DbException(e.getMessage());
-            }
-        }
-        return conexao;
-    }
-
-    public static void closeConnection() {
-        if (conexao != null) {
-            try {
-                conexao.close();
-                conexao = null;
+                return DriverManager.getConnection(url, usuario, senha);
             } catch (SQLException e) {
                 throw new DbException(e.getMessage());
             }
 
-        }
     }
 
 }
