@@ -35,7 +35,7 @@ public class ClienteService {
     }
 
     public Cliente buscarPorTelefone(String telefone) {
-        return clienteDao.buscaPortelefone(telefone);
+        return clienteDao.buscaPorTelefone(telefone);
     }
 
     public Cliente removerCliente(int id) {

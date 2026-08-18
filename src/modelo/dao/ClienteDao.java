@@ -15,7 +15,7 @@ public interface ClienteDao {
 
     List<Cliente> buscaPorNome(String nome);
 
-    Cliente buscaPortelefone(String telefone);
+    Cliente buscaPorTelefone(String telefone);
 
     List<Cliente> buscarTodos();
 }

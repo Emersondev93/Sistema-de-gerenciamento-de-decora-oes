@@ -6,6 +6,7 @@ import modelo.dao.ClienteDao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -145,8 +146,51 @@ public class ClienteDaoJDBC implements ClienteDao {
     }
 
     @Override
-    public Cliente buscaPortelefone(String telefone) {
-        return null;
+    public Cliente buscaPorTelefone(String telefone) {
+        String sql = """ 
+                SELECT cliente.id, cliente.nome, cliente.telefone,
+                endereco.id AS endereco_id,
+                endereco.rua,
+                endereco.numero,
+                endereco.bairro,
+                endereco.cidade,
+                endereco.cep
+                FROM cliente INNER JOIN endereco
+                ON cliente.endereco_id = endereco.id
+                WHERE cliente.telefone = ? """;
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, telefone);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+
+                if (resultado.next()) {
+                    Endereco endereco = new Endereco(
+                            resultado.getInt("endereco_id"),
+                            resultado.getString("rua"),
+                            resultado.getString("numero"),
+                            resultado.getString("bairro"),
+                            resultado.getString("cidade"),
+                            resultado.getString("cep"));
+
+                    return new Cliente(
+                            resultado.getInt("id"),
+                            resultado.getString("nome"),
+                            resultado.getString("telefone"),
+                            endereco
+                    );
+                }
+                return null;
+
+            }
+
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+
     }
 
     @Override
