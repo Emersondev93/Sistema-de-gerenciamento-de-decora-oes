@@ -38,6 +38,13 @@ public class ClienteService {
         return clienteDao.buscaPorTelefone(telefone);
     }
 
+    public void atualizarCliente(Cliente cliente){
+
+        clienteDao.atualizar(cliente);
+        enderecoDao.atualizar(cliente.getEndereco());
+
+    }
+
     public Cliente removerCliente(int id) {
         Cliente encontrado = clienteDao.buscaPorId(id);
         if (encontrado != null) {

@@ -42,7 +42,24 @@ public class EnderecoDaoJDBC implements EnderecoDao {
 
     @Override
     public void atualizar(Endereco endereco) {
+            String sql = """
+                    UPDATE endereco
+                    SET rua = ?, numero = ?, bairro = ?, cidade = ?, cep = ?
+                    WHERE id = ?""";
+            try (Connection conexao = Conexao.getConnection();
+            PreparedStatement comando = conexao.prepareStatement(sql)){
+                comando.setString(1, endereco.getRua());
+                comando.setString(2, endereco.getNumero());
+                comando.setString(3, endereco.getBairro());
+                comando.setString(4, endereco.getCidade());
+                comando.setString(5, endereco.getCep());
+                comando.setInt(6, endereco.getId());
 
+                comando.executeUpdate();
+
+            }catch (SQLException e){
+                throw new DbException(e.getMessage());
+            }
     }
 
     @Override
