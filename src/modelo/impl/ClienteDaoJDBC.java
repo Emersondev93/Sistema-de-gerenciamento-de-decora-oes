@@ -6,7 +6,6 @@ import modelo.dao.ClienteDao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -195,6 +194,45 @@ public class ClienteDaoJDBC implements ClienteDao {
 
     @Override
     public List<Cliente> buscarTodos() {
-        return List.of();
+        String sql = """
+                SELECT cliente.id, cliente.nome, cliente.telefone,
+                endereco.id AS endereco_id,
+                endereco.rua,
+                endereco.numero,
+                endereco.bairro,
+                endereco.cidade,
+                endereco.cep 
+                FROM cliente INNER JOIN endereco ON cliente.endereco_id = endereco.id""";
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet resultado = comando.executeQuery()) {
+
+            List<Cliente> clientes = new ArrayList<>();
+            while (resultado.next()) {
+                Endereco endereco = new Endereco(
+                        resultado.getInt("endereco_id"),
+                        resultado.getString("rua"),
+                        resultado.getString("numero"),
+                        resultado.getString("bairro"),
+                        resultado.getString("cidade"),
+                        resultado.getString("cep")
+                );
+
+                Cliente cliente = new Cliente(
+                        resultado.getInt("id"),
+                        resultado.getString("nome"),
+                        resultado.getString("telefone"),
+                        endereco
+                );
+
+                clientes.add(cliente);
+            }
+
+            return clientes;
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 }
