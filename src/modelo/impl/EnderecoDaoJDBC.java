@@ -64,7 +64,16 @@ public class EnderecoDaoJDBC implements EnderecoDao {
 
     @Override
     public void excluirPorId(Integer id) {
+        String sql = "DELETE FROM endereco WHERE id = ?";
 
+        try(Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)){
+            comando.setInt(1, id);
+            comando.executeUpdate();
+
+
+        }catch (SQLException e){
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override

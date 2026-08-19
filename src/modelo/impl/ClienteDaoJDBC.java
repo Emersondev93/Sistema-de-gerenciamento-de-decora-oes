@@ -45,24 +45,33 @@ public class ClienteDaoJDBC implements ClienteDao {
     public void atualizar(Cliente cliente) {
         String sql = """
                 UPDATE cliente 
-                SET nome = ?, telefone = ?, 
+                SET nome = ?, telefone = ?
                 WHERE id = ?""";
 
         try (Connection conexao = Conexao.getConnection();
-             PreparedStatement comando = conexao.prepareStatement(sql)){
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setString(1, cliente.getNome());
             comando.setString(2, cliente.getTelefone());
             comando.setInt(3, cliente.getId());
 
             comando.executeUpdate();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
     @Override
     public void excluirPorId(Integer id) {
+        String sql = "DELETE FROM cliente WHERE id = ?";
+
+        try (Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setInt(1, id);
+            comando.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
 
     }
 

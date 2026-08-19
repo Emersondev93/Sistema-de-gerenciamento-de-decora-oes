@@ -47,8 +47,13 @@ public class ClienteService {
 
     public Cliente removerCliente(int id) {
         Cliente encontrado = clienteDao.buscaPorId(id);
+
         if (encontrado != null) {
+            Integer idEndereco = encontrado.getEndereco().getId();
+
             clienteDao.excluirPorId(id);
+
+            enderecoDao.excluirPorId(idEndereco);
         }
         return encontrado;
     }

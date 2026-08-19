@@ -245,6 +245,7 @@ public class Sistema {
                 System.out.println("Opção inválida.");
         }
         if (alterado) {
+            clienteService.atualizarCliente(c);
             System.out.println("Alterações feitas com sucesso!");
         }
     }
