@@ -13,5 +13,9 @@ public interface EventoDao {
 
     Evento buscaPorId(String idEvento);
 
-    List<Evento> buscartodos();
+    List<Evento> buscarTodos();
+
+    String gerarProximoId();
+
+
 }

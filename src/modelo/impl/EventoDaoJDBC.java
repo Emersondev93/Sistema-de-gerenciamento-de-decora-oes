@@ -41,12 +41,43 @@ public class EventoDaoJDBC implements EventoDao {
     @Override
     public void atualizar(Evento evento) {
 
+        String sql = """
+            UPDATE evento
+            SET data = ?, tema = ?, valor = ?, cliente_id = ?
+            WHERE id_evento = ?
+            """;
 
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setDate(1, java.sql.Date.valueOf(evento.getData()));
+            comando.setString(2, evento.getTema());
+            comando.setDouble(3, evento.getValor());
+            comando.setInt(4, evento.getCliente().getId());
+            comando.setString(5, evento.getIdEvento());
+
+            comando.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
-    public void excluirPorId(String edEvento) {
+    public void excluirPorId(String idEvento) {
 
+        String sql = "DELETE FROM evento WHERE id_evento = ?";
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, idEvento);
+
+            comando.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
@@ -114,7 +145,7 @@ public class EventoDaoJDBC implements EventoDao {
     }
 
     @Override
-    public List<Evento> buscartodos() {
+    public List<Evento> buscarTodos() {
 
         String sql = """
                 SELECT evento.id_evento,
@@ -177,5 +208,33 @@ public class EventoDaoJDBC implements EventoDao {
 
 
         return List.of();
+    }
+
+    @Override
+    public String gerarProximoId(){
+        String sql = """
+                SELECT MAX(CAST(SUBSTRING(id_evento, 3) AS UNSIGNED))
+                FROM evento
+                """;
+        try (Connection conexao = Conexao.getConnection();
+            PreparedStatement comando = conexao.prepareStatement(sql);
+            ResultSet resultado = comando.executeQuery()){
+
+            if (resultado.next()){
+                int maiorId = resultado.getInt(1);
+
+                if (resultado.wasNull()){
+                    maiorId = 0;
+                }
+                return String.format("EV%03d", maiorId + 1);
+
+            }
+
+            return "EV))!";
+
+        }catch (SQLException e){
+            throw new DbException(e.getMessage());
+        }
+
     }
 }

@@ -1,16 +1,17 @@
 package modelo.servicos;
 
+import modelo.dao.EventoDao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
+import modelo.impl.EventoDaoJDBC;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventoService {
-    private List<Evento> eventos = new ArrayList<>();
-    private int idEventoSequencial = 1;
+
+    private EventoDao eventoDao = new EventoDaoJDBC();
 
     public Evento cadastrarEvento(LocalDate data, String tema, double valor, Cliente cliente) throws DominioDeExcecao {
 
@@ -18,33 +19,42 @@ public class EventoService {
             throw new DominioDeExcecao("O valor do evento deve ser maior que zero.");
         }
 
-        String idEvento = "ev" + idEventoSequencial;
-        idEventoSequencial++;
+        String idEvento = eventoDao.gerarProximoId();
+
         Evento novoEvento = new Evento(idEvento, data, tema, valor, cliente);
-        eventos.add(novoEvento);
+
+        eventoDao.inserir(novoEvento);
+
         return novoEvento;
     }
 
     public List<Evento> listarEventos() {
-        return new ArrayList<>(eventos);
+        return eventoDao.buscarTodos();
     }
 
-    public Evento buscarPorId(String id) {
-        for (Evento e : eventos) {
-            if (e.getIdEvento().equals(id)) {
-                return e;
-            }
+    public void atualizarEvento(Evento evento) throws DominioDeExcecao {
+
+        if (evento.getValor() <= 0) {
+            throw new DominioDeExcecao(
+                    "O valor do evento deve ser maior que zero."
+            );
         }
-        return null;
+
+        eventoDao.atualizar(evento);
     }
 
-    public Evento removerEvento(String id) {
-        Evento encontrado = buscarPorId(id);
+    public Evento buscarPorId(String idEvento) {
+        return eventoDao.buscaPorId(idEvento);
+    }
+
+    public Evento removerEvento(String idEvento) {
+
+        Evento encontrado = buscarPorId(idEvento);
+
         if (encontrado != null) {
-            eventos.remove(encontrado);
+            eventoDao.excluirPorId(idEvento);
         }
+
         return encontrado;
     }
-
-
 }
