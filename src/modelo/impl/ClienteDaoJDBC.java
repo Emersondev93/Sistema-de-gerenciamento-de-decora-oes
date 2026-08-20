@@ -95,7 +95,7 @@ public class ClienteDaoJDBC implements ClienteDao {
                 if (resultado.next()) {
 
                     Endereco endereco = new Endereco(
-                            resultado.getInt("Endereco_id"),
+                            resultado.getInt("endereco_id"),
                             resultado.getString("rua"),
                             resultado.getString("numero"),
                             resultado.getString("bairro"),

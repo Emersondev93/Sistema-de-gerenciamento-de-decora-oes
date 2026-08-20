@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnderecoDaoJDBC implements EnderecoDao {
@@ -110,8 +111,39 @@ public class EnderecoDaoJDBC implements EnderecoDao {
 
     @Override
     public List<Endereco> buscarTodos() {
-        return List.of();
-    }
 
+
+        String sql = "SELECT * FROM endereco";
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet resultado = comando.executeQuery()) {
+
+            List<Endereco> enderecos = new ArrayList<>();
+
+            while (resultado.next()) {
+                Endereco endereco = new Endereco(
+
+                        resultado.getInt("id"),
+                        resultado.getString("rua"),
+                        resultado.getString("numero"),
+                        resultado.getString("bairro"),
+                        resultado.getString("cidade"),
+                        resultado.getString("cep")
+
+                );
+
+                enderecos.add(endereco);
+            }
+
+            return enderecos;
+
+        } catch (SQLException e) {
+
+            throw new DbException(e.getMessage());
+
+        }
+
+    }
 
 }
