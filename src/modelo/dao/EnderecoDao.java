@@ -11,7 +11,7 @@ public interface EnderecoDao {
 
     void excluirPorId (Integer id);
 
-    void buscarPorId (Integer id);
+    Endereco buscarPorId (Integer id);
 
     List<Endereco> buscarTodos();
 }

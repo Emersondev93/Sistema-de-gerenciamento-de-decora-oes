@@ -28,8 +28,8 @@ public class EnderecoDaoJDBC implements EnderecoDao {
             comando.setString(5, endereco.getCep());
 
             comando.executeUpdate();
-            try (ResultSet resultado = comando.getGeneratedKeys()){
-                if (resultado.next()){
+            try (ResultSet resultado = comando.getGeneratedKeys()) {
+                if (resultado.next()) {
                     int id = resultado.getInt(1);
                     endereco.setId(id);
                 }
@@ -42,42 +42,69 @@ public class EnderecoDaoJDBC implements EnderecoDao {
 
     @Override
     public void atualizar(Endereco endereco) {
-            String sql = """
-                    UPDATE endereco
-                    SET rua = ?, numero = ?, bairro = ?, cidade = ?, cep = ?
-                    WHERE id = ?""";
-            try (Connection conexao = Conexao.getConnection();
-            PreparedStatement comando = conexao.prepareStatement(sql)){
-                comando.setString(1, endereco.getRua());
-                comando.setString(2, endereco.getNumero());
-                comando.setString(3, endereco.getBairro());
-                comando.setString(4, endereco.getCidade());
-                comando.setString(5, endereco.getCep());
-                comando.setInt(6, endereco.getId());
+        String sql = """
+                UPDATE endereco
+                SET rua = ?, numero = ?, bairro = ?, cidade = ?, cep = ?
+                WHERE id = ?""";
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, endereco.getRua());
+            comando.setString(2, endereco.getNumero());
+            comando.setString(3, endereco.getBairro());
+            comando.setString(4, endereco.getCidade());
+            comando.setString(5, endereco.getCep());
+            comando.setInt(6, endereco.getId());
 
-                comando.executeUpdate();
+            comando.executeUpdate();
 
-            }catch (SQLException e){
-                throw new DbException(e.getMessage());
-            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
     public void excluirPorId(Integer id) {
         String sql = "DELETE FROM endereco WHERE id = ?";
 
-        try(Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)){
+        try (Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setInt(1, id);
             comando.executeUpdate();
 
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
     @Override
-    public void buscarPorId(Integer id) {
+    public Endereco buscarPorId(Integer id) {
+
+        String sql = "SELECT * FROM endereco WHERE id = ?";
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, id);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+
+                if (resultado.next()) {
+
+                    return new Endereco(
+                            resultado.getInt("id"),
+                            resultado.getString("rua"),
+                            resultado.getString("numero"),
+                            resultado.getString("bairro"),
+                            resultado.getString("cidade"),
+                            resultado.getString("cep")
+                    );
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+
 
     }
 
@@ -85,4 +112,6 @@ public class EnderecoDaoJDBC implements EnderecoDao {
     public List<Endereco> buscarTodos() {
         return List.of();
     }
+
+
 }
