@@ -202,12 +202,12 @@ public class EventoDaoJDBC implements EventoDao {
 
             }
 
+            return eventos;
+
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
 
-
-        return List.of();
     }
 
     @Override

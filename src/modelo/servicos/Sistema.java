@@ -1,5 +1,6 @@
 package modelo.servicos;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
@@ -152,20 +153,83 @@ public class Sistema {
     }
 
     public List<Evento> listarEvento() {
-        System.out.println("===========DECORAÇÕES AGENDADAS============");
-        return eventoService.listarEventos();
+
+        List<Evento> eventos = eventoService.listarEventos();
+
+        System.out.println();
+        System.out.println("============================================================");
+        System.out.println("                  DECORAÇÕES AGENDADAS");
+        System.out.println("============================================================");
+
+        if (eventos.isEmpty()) {
+            System.out.println("Nenhuma decoração agendada.");
+            return eventos;
+        }
+
+        for (Evento evento : eventos) {
+
+            System.out.println();
+            System.out.println("ID: " + evento.getIdEvento());
+            System.out.println("Data: " + evento.getData().format(fmt));
+            System.out.println("Tema: " + evento.getTema());
+            System.out.printf("Valor: R$ %.2f%n", evento.getValor());
+
+            Cliente cliente = evento.getCliente();
+
+            System.out.println("Cliente: " + cliente.getNome());
+            System.out.println("Telefone: " + cliente.getTelefone());
+
+            System.out.println("------------------------------------------------------------");
+        }
+
+        return eventos;
     }
 
     public void removerEvento() {
-        System.out.println("================CANCELAR AGENDAMENTO================");
-        System.out.print("Digite o ID o evento: ");
+
+        System.out.println("================ CANCELAR AGENDAMENTO ================");
+        System.out.print("Digite o ID do evento: ");
         String idRemover = sc.next();
 
-        Evento removido = eventoService.removerEvento(idRemover);
-        if (removido != null) {
-            System.out.println("Agendamento " + idRemover + " cancelado!");
-        } else {
+        Evento evento = eventoService.buscarPorId(idRemover);
+
+        if (evento == null) {
             System.out.println("Não há evento com este ID!");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("Evento encontrado:");
+        System.out.println("ID: " + evento.getIdEvento());
+        System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Tema: " + evento.getTema());
+        System.out.printf("Valor: R$ %.2f%n", evento.getValor());
+        System.out.println("Cliente: " + evento.getCliente().getNome());
+
+        System.out.println();
+        System.out.println("Deseja realmente cancelar este agendamento?");
+        System.out.println("1 - Sim");
+        System.out.println("2 - Não");
+        System.out.print("Escolha uma opção: ");
+
+        int opcao = sc.nextInt();
+        sc.nextLine();
+
+        if (opcao == 1) {
+
+            Evento removido = eventoService.removerEvento(idRemover);
+
+            if (removido != null) {
+                System.out.println("Agendamento " + idRemover + " cancelado com sucesso!");
+            }
+
+        } else if (opcao == 2) {
+
+            System.out.println("Cancelamento interrompido.");
+
+        } else {
+
+            System.out.println("Opção inválida. Cancelamento interrompido.");
         }
     }
 
@@ -248,6 +312,181 @@ public class Sistema {
             clienteService.atualizarCliente(c);
             System.out.println("Alterações feitas com sucesso!");
         }
+    }
+
+    public void buscarEvento() {
+        System.out.println("=============== BUSCAR DECORAÇÃO ================");
+        System.out.println("Digite o ID do evento: ");
+        String id = sc.nextLine();
+
+        Evento evento = eventoService.buscarPorId(id);
+
+        if (evento == null) {
+            System.out.println("Não foi encontrado evento com este ID.");
+            return;
+        }
+
+        System.out.println("\nEvento encontrado!");
+        System.out.println("ID: " + evento.getIdEvento());
+        System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Tema: " + evento.getTema());
+        System.out.println("Valor: R$ " + evento.getValor());
+
+        Cliente cliente = evento.getCliente();
+
+        System.out.println("\nCliente: ");
+        System.out.println("ID: " + cliente.getId());
+        System.out.println("Nome: " + cliente.getNome());
+        System.out.println("Telefone: " + cliente.getTelefone());
+
+        System.out.println("Endereço: " + cliente.getEndereco());
+
+    }
+
+    public void alterarEvento() throws DominioDeExcecao {
+
+        System.out.println("=============== ALTERAR DECORAÇÃO ===============");
+        System.out.print("Digite o ID do evento: ");
+        String id = sc.nextLine();
+
+        Evento evento = eventoService.buscarPorId(id);
+
+        if (evento == null) {
+            System.out.println("Não foi encontrado evento com este ID.");
+            return;
+        }
+
+        System.out.println("\nEvento encontrado:");
+        System.out.println("ID: " + evento.getIdEvento());
+        System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Tema: " + evento.getTema());
+        System.out.println("Valor: R$ " + evento.getValor());
+
+        System.out.println("\nO que deseja alterar?");
+        System.out.println("1 - Data");
+        System.out.println("2 - Tema");
+        System.out.println("3 - Valor");
+        System.out.println("4 - Voltar");
+        System.out.print("Opção: ");
+
+        int opcao = sc.nextInt();
+        sc.nextLine();
+
+        boolean alterado = false;
+
+        switch (opcao) {
+
+            case 1:
+                while (true) {
+                    System.out.print("Nova data (dd/MM/aaaa): ");
+                    String data = sc.nextLine();
+
+                    try {
+                        LocalDate novaData = LocalDate.parse(data, fmt);
+
+                        if (novaData.isBefore(LocalDate.now())) {
+                            System.out.println(
+                                    "A data do evento deve ser posterior à data de hoje."
+                            );
+                        } else {
+                            evento.setData(novaData);
+                            alterado = true;
+                            break;
+                        }
+
+                    } catch (DateTimeParseException e) {
+                        System.out.println(
+                                "Data em formato inválido. Use dd/MM/aaaa."
+                        );
+                    }
+                }
+                break;
+
+            case 2:
+                System.out.print("Novo tema: ");
+                String novoTema = sc.nextLine();
+                evento.setTema(novoTema);
+                alterado = true;
+                break;
+
+            case 3:
+                System.out.print("Novo valor: ");
+                double novoValor = sc.nextDouble();
+                sc.nextLine();
+
+                evento.setValor(novoValor);
+                alterado = true;
+                break;
+
+            case 4:
+                System.out.println("Alteração cancelada.");
+                break;
+
+            default:
+                System.out.println("Opção inválida.");
+        }
+
+        if (alterado) {
+            eventoService.atualizarEvento(evento);
+            System.out.println("Evento atualizado com sucesso!");
+        }
+    }
+
+    public void menuEventos() {
+        int opcao;
+
+        do {
+            System.out.println("\n=============== GERENCIAMENTO DE DECORAÇÕES =================");
+            System.out.println("1 - Agendar decoração");
+            System.out.println("2 - Listar decorações");
+            System.out.println("3 - Buscar decoração");
+            System.out.println("4 - Alterar decoração");
+            System.out.println("5 - Cancelar decoração");
+            System.out.println("6 - Voltar");
+            System.out.println("Escolha uma opção: ");
+
+            opcao = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    try {
+                        cadastrarEvento();
+                    } catch (DominioDeExcecao e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                    break;
+
+                case 2:
+                    listarEvento();
+                    break;
+
+                case 3:
+                    buscarEvento();
+                    break;
+
+                case 4:
+                    try {
+                        alterarEvento();
+                    } catch (DominioDeExcecao e) {
+                        System.out.println("Erro" + e.getMessage());
+                    }
+                    break;
+
+                case 5:
+                    removerEvento();
+                    break;
+                case 6:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+
+                default:
+                    System.out.println("Opção inválida!");
+
+            }
+
+
+        } while (opcao != 6);
     }
 }
 

@@ -1,8 +1,8 @@
 package aplicacao;
 
+import excecoes.DominioDeExcecao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Evento;
-import excecoes.DominioDeExcecao;
 import modelo.servicos.Sistema;
 
 import java.util.InputMismatchException;
@@ -11,72 +11,209 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class Programa {
+
     public static void main(String[] args) {
+
         Locale.setDefault(Locale.US);
+
         Scanner sc = new Scanner(System.in);
-        try {
+        Sistema sistema = new Sistema();
 
-            Sistema sistema = new Sistema();
+        int opcao;
 
-            int opcao;
-            System.out.println(" ".repeat(50) + "============SISTEMA DE GERENCIAMENTO PARA EVENTOS==============");
-            do {
-                System.out.println("MENU PRINCIPAL" +
-                        "\n1 - Cadastrar cliente" +
-                        "\n2 - Excluir cadastro" +
-                        "\n3 - Lista de clientes" +
-                        "\n4 - Alterar informações de cliente" +
-                        "\n5 - Agendar decoração" +
-                        "\n6 - Decorações Agendadas" +
-                        "\n7 - Cancelar agendamento" +
-                        "\n8 - Sair");
-                System.out.print("Digite o número da opção escolhida: ");
+        System.out.println();
+        System.out.println("======================================================");
+        System.out.println("       SISTEMA DE GERENCIAMENTO PARA EVENTOS");
+        System.out.println("======================================================");
+
+        do {
+
+            System.out.println();
+            System.out.println("================ MENU PRINCIPAL ================");
+            System.out.println("1 - Gerenciar clientes");
+            System.out.println("2 - Gerenciar eventos");
+            System.out.println("0 - Sair");
+            System.out.println("=================================================");
+            System.out.print("Escolha uma opção: ");
+
+            try {
+
                 opcao = sc.nextInt();
                 sc.nextLine();
-                System.out.println();
+
                 switch (opcao) {
+
+                    case 1:
+                        menuClientes(sc, sistema);
+                        break;
+
+                    case 2:
+                        menuEventos(sc, sistema);
+                        break;
+
+                    case 0:
+                        System.out.println("\nEncerrando o sistema...");
+                        break;
+
+                    default:
+                        System.out.println("\nOpção inválida!");
+
+                }
+
+            } catch (InputMismatchException erro) {
+
+                System.out.println("\nErro: digite apenas números.");
+                sc.nextLine();
+                opcao = -1;
+            }
+
+        } while (opcao != 0);
+
+        sc.close();
+    }
+
+    private static void menuClientes(Scanner sc, Sistema sistema) {
+
+        int opcao;
+
+        do {
+
+            System.out.println();
+            System.out.println("================ GERENCIAR CLIENTES ================");
+            System.out.println("1 - Cadastrar cliente");
+            System.out.println("2 - Listar clientes");
+            System.out.println("3 - Buscar cliente");
+            System.out.println("4 - Alterar cliente");
+            System.out.println("5 - Excluir cliente");
+            System.out.println("0 - Voltar");
+            System.out.println("====================================================");
+            System.out.print("Escolha uma opção: ");
+
+            try {
+
+                opcao = sc.nextInt();
+                sc.nextLine();
+
+                switch (opcao) {
+
                     case 1:
                         sistema.cadastrarCliente();
                         break;
+
                     case 2:
-                        sistema.removerCliente();
-                        break;
-                    case 3:
-                        List<Cliente> listarClientes = sistema.listarClientes();
-                        for (Cliente c : listarClientes) {
-                            System.out.println(c);
-                            System.out.println();
+                        List<Cliente> clientes = sistema.listarClientes();
+
+                        if (clientes.isEmpty()) {
+                            System.out.println("Nenhum cliente cadastrado.");
+                        } else {
+                            System.out.println("\n================ CLIENTES ================");
+
+                            for (Cliente cliente : clientes) {
+                                System.out.println(cliente);
+                                System.out.println("------------------------------------------");
+                            }
                         }
                         break;
+
+                    case 3:
+                        sistema.buscaPorMenu();
+                        break;
+
                     case 4:
                         sistema.alterarDadosCliente();
                         break;
+
                     case 5:
-                        sistema.cadastrarEvento();
+                        sistema.removerCliente();
                         break;
-                    case 6:
-                        List<Evento> listaEventos = sistema.listarEvento();
-                        for (Evento e : listaEventos){
-                            System.out.println(e);
-                            System.out.println();
+
+                    case 0:
+                        System.out.println("Voltando ao menu principal...");
+                        break;
+
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+
+            } catch (InputMismatchException erro) {
+
+                System.out.println("Erro: digite apenas números.");
+                sc.nextLine();
+                opcao = -1;
+
+            }
+
+        } while (opcao != 0);
+    }
+
+    private static void menuEventos(Scanner sc, Sistema sistema) {
+
+        int opcao;
+
+        do {
+
+            System.out.println();
+            System.out.println("================ GERENCIAR EVENTOS ================");
+            System.out.println("1 - Agendar decoração");
+            System.out.println("2 - Listar decorações");
+            System.out.println("3 - Buscar decoração");
+            System.out.println("4 - Alterar decoração");
+            System.out.println("5 - Cancelar decoração");
+            System.out.println("0 - Voltar");
+            System.out.println("===================================================");
+            System.out.print("Escolha uma opção: ");
+
+            try {
+
+                opcao = sc.nextInt();
+                sc.nextLine();
+
+                switch (opcao) {
+
+                    case 1:
+                        try {
+                            sistema.cadastrarEvento();
+                        } catch (DominioDeExcecao erro) {
+                            System.out.println("Erro: " + erro.getMessage());
                         }
                         break;
-                    case 7:
+
+                    case 2:
+                        sistema.listarEvento();
+                        break;
+
+                    case 3:
+                        sistema.buscarEvento();
+                        break;
+
+                    case 4:
+                        try {
+                            sistema.alterarEvento();
+                        } catch (DominioDeExcecao erro) {
+                            System.out.println("Erro: " + erro.getMessage());
+                        }
+                        break;
+
+                    case 5:
                         sistema.removerEvento();
                         break;
-                    case 8:
-                        System.out.println("Saindo...");
+
+                    case 0:
+                        System.out.println("Voltando ao menu principal...");
                         break;
+
                     default:
-                        System.out.println("Opção inválida.");
+                        System.out.println("Opção inválida!");
                 }
-                System.out.println();
-            } while (opcao != 8);
-        } catch (InputMismatchException erro) {
-            System.out.println("Erro. Tipo de caractere inválido! ");
-        } catch (DominioDeExcecao erro) {
-            System.out.println("Erro. " + erro.getMessage());
-        }
-        sc.close();
+
+            } catch (InputMismatchException erro) {
+
+                System.out.println("Erro: digite apenas números.");
+                sc.nextLine();
+                opcao = -1;
+
+            }
+
+        } while (opcao != 0);
     }
 }

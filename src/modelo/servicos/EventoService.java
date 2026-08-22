@@ -34,12 +34,6 @@ public class EventoService {
 
     public void atualizarEvento(Evento evento) throws DominioDeExcecao {
 
-        if (evento.getValor() <= 0) {
-            throw new DominioDeExcecao(
-                    "O valor do evento deve ser maior que zero."
-            );
-        }
-
         eventoDao.atualizar(evento);
     }
 
