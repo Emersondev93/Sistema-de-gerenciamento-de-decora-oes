@@ -4,13 +4,11 @@ import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class Sistema {
@@ -106,6 +104,28 @@ public class Sistema {
                 return false;
             }
             System.out.println("Opção inválida. Digite S para sim ou N para não.");
+        }
+    }
+
+    private double lerValor(){
+        while (true){
+            System.out.print("Valor: ");
+
+            String entrada = sc.nextLine().trim();
+
+            try {
+                double valor = Double.parseDouble(entrada);
+
+                if (valor <= 0){
+                    System.out.println("O valor deve ser maior que zero.");
+                    continue;
+                }
+
+                return valor;
+
+            }catch(NumberFormatException erro){
+                System.out.println("Valor inválido. Digite apenas números.");
+            }
         }
     }
 
@@ -248,13 +268,9 @@ public class Sistema {
             }
         }
 
-        sc.nextLine();
+        String tema = lerCampoObrigatorio("Tema: ");
 
-        System.out.print("Tema: ");
-        String tema = sc.nextLine();
-
-        System.out.print("Valor: ");
-        double valor = sc.nextDouble();
+        double valor = lerValor();
 
         Evento novoEvento = eventoService.cadastrarEvento(dataFormatada, horario, tema, valor, cliente);
         System.out.println("Evento " + novoEvento.getIdEvento() + " cadastrado com sucesso! ");
@@ -511,16 +527,14 @@ public class Sistema {
                 break;
 
             case 2:
-                System.out.print("Novo tema: ");
-                String novoTema = sc.nextLine();
+                String novoTema = lerCampoObrigatorio("Novo Tema: ");
+
                 evento.setTema(novoTema);
                 alterado = true;
                 break;
 
             case 3:
-                System.out.print("Novo valor: ");
-                double novoValor = sc.nextDouble();
-                sc.nextLine();
+                double novoValor = lerValor();
 
                 evento.setValor(novoValor);
                 alterado = true;

@@ -134,7 +134,7 @@ public class EventoDaoJDBC implements EventoDao {
                     return new Evento(
                             resultado.getString("id_evento"),
                             resultado.getDate("data").toLocalDate(),
-                            resultado.getTime("horário").toLocalTime(),
+                            resultado.getTime("horario").toLocalTime(),
                             resultado.getString("tema"),
                             resultado.getDouble("valor"),
                             cliente
