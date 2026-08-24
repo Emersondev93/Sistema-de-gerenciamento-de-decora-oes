@@ -2,6 +2,8 @@ package modelo.dao;
 
 import modelo.entidades.Evento;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface EventoDao {
@@ -17,5 +19,6 @@ public interface EventoDao {
 
     String gerarProximoId();
 
+    boolean existeEventoNaDataEHorario(LocalDate data, LocalTime horario);
 
 }

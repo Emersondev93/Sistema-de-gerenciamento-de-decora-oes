@@ -1,15 +1,16 @@
 package modelo.servicos;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Sistema {
@@ -18,22 +19,105 @@ public class Sistema {
     private EventoService eventoService = new EventoService();
     private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public void cadastrarCliente() {
+    private String lerCampoObrigatorio(String mensagem) {
+        String valor;
+
+        do {
+            System.out.print(mensagem);
+            valor = sc.nextLine().trim();
+
+            if (valor.isEmpty()) {
+                System.out.println("Este campo não pode ser vazio.");
+            }
+        } while (valor.isEmpty());
+        return valor;
+    }
+
+    private String lerTelefone() {
+
+        String telefone;
+
+        do {
+            System.out.print("Telefone: ");
+            telefone = sc.nextLine().trim();
+
+            telefone = telefone.replaceAll("\\D", "");
+
+            if (telefone.length() != 10 && telefone.length() != 11) {
+                System.out.println("Telefone inválido. Digite um telefone com 10 ou 11 números.");
+            }
+        } while (telefone.length() != 10 && telefone.length() != 11);
+
+        return telefone;
+    }
+
+    private String lerCep() {
+        String cep;
+
+        do {
+            System.out.print("Cep: ");
+            cep = sc.nextLine().trim();
+
+            cep = cep.replaceAll("\\D", "");
+
+            if (cep.length() != 8) {
+                System.out.println("CEP inválido. Digite um CEP com 8 números.");
+            }
+        } while (cep.length() != 8);
+
+        return cep;
+    }
+
+    private LocalTime lerHorario() {
+
+        DateTimeFormatter formatoHorario = DateTimeFormatter.ofPattern("HH:mm");
+
+        while (true) {
+            System.out.print("Horario do evento (HH:mm): ");
+            String horario = sc.nextLine().trim();
+
+            try {
+                return LocalTime.parse(horario, formatoHorario);
+
+            } catch (DateTimeParseException erro) {
+                System.out.println("Horário inválido. Use o formato HH:mm.");
+            }
+        }
+    }
+
+    private boolean confirmarAgendamento() {
+        while (true) {
+            System.out.println("Deseja agendar mesmo assim? (S/N): ");
+
+            String entrada = sc.nextLine().trim();
+
+            if ((entrada.isEmpty())) {
+                System.out.println("Digite S para sim ou N para não.");
+                continue;
+            }
+
+            char resposta = entrada.toUpperCase().charAt(0);
+
+            if (resposta == 'S') {
+                return true;
+            }
+
+            if (resposta == 'N') {
+                return false;
+            }
+            System.out.println("Opção inválida. Digite S para sim ou N para não.");
+        }
+    }
+
+    public void cadastrarCliente() throws DominioDeExcecao {
         System.out.println("================CADASTRAR CLIENTE================ ");
-        System.out.print("Nome: ");
-        String nome = sc.nextLine();
-        System.out.print("Telefone: ");
-        String telefone = sc.nextLine();
-        System.out.print("Rua: ");
-        String rua = sc.nextLine();
-        System.out.print("Número: ");
-        String numero = sc.nextLine();
-        System.out.print("Bairro: ");
-        String bairro = sc.nextLine();
-        System.out.print("Cidade: ");
-        String cidade = sc.nextLine();
-        System.out.print("Cep: ");
-        String cep = sc.nextLine();
+        String nome = lerCampoObrigatorio("Nome: ");
+        String telefone = lerTelefone();
+        String rua = lerCampoObrigatorio("Rua: ");
+        String numero = lerCampoObrigatorio("Número: ");
+        String bairro = lerCampoObrigatorio("Bairro: ");
+        String cidade = lerCampoObrigatorio("Cidade: ");
+        String cep = lerCep();
         Endereco endereco = new Endereco(null, rua, numero, bairro, cidade, cep);
         Cliente cliente = clienteService.cadastrarCliente(nome, telefone, endereco);
         System.out.println("Cliente cadastrado com sucesso! ID: " + cliente.getId());
@@ -118,16 +202,19 @@ public class Sistema {
 
     public void cadastrarEvento() throws DominioDeExcecao {
         System.out.println("================AGENDAR DECORAÇÃO================");
+
         Cliente cliente = buscaPorMenu();
+
         if (cliente == null) {
             return;
         }
 
         LocalDate dataFormatada = null;
         boolean validacao = false;
+
         do {
             System.out.print("Data do evento (dd/MM/aaaa): ");
-            String data = sc.next();
+            String data = sc.nextLine().trim();
             try {
                 dataFormatada = LocalDate.parse(data, fmt);
             } catch (DateTimeParseException erro) {
@@ -142,13 +229,34 @@ public class Sistema {
         }
         while (!validacao);
 
+        LocalTime horario = lerHorario();
+
+        boolean existeConflito = eventoService.existeEventoNaDataEHorario(dataFormatada, horario);
+
+        if (existeConflito){
+            System.out.println();
+            System.out.println("ATENÇÃO!");
+            System.out.println("Já existe um evento para: ");
+            System.out.println("Data: " + dataFormatada.format(fmt));
+            System.out.println("Horário: " + horario);
+
+            boolean continuar = confirmarAgendamento();
+
+            if(!continuar){
+                System.out.println("Agendamento cancelado.");
+                return;
+            }
+        }
+
         sc.nextLine();
+
         System.out.print("Tema: ");
         String tema = sc.nextLine();
+
         System.out.print("Valor: ");
         double valor = sc.nextDouble();
 
-        Evento novoEvento = eventoService.cadastrarEvento(dataFormatada, tema, valor, cliente);
+        Evento novoEvento = eventoService.cadastrarEvento(dataFormatada, horario, tema, valor, cliente);
         System.out.println("Evento " + novoEvento.getIdEvento() + " cadastrado com sucesso! ");
     }
 

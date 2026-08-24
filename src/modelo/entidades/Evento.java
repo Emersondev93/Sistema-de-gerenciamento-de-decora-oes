@@ -1,18 +1,21 @@
 package modelo.entidades;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class Evento {
     private String idEvento;
     private LocalDate data;
+    private LocalTime horario;
     private String tema;
     private double valor;
     private Cliente cliente;
 
-    public Evento(String idEvento, LocalDate data, String tema, double valor, Cliente cliente) {
+    public Evento(String idEvento, LocalDate data, LocalTime horario, String tema, double valor, Cliente cliente) {
         this.idEvento = idEvento;
         this.data = data;
+        this.horario = horario;
         this.tema = tema;
         this.valor = valor;
         this.cliente = cliente;
@@ -31,6 +34,16 @@ public class Evento {
     public void setData(LocalDate data) {
 
         this.data = data;
+    }
+
+    public LocalTime getHorario() {
+
+        return horario;
+    }
+
+    public void setHorario(LocalTime horario) {
+
+        this.horario = horario;
     }
 
     public String getTema() {
@@ -67,6 +80,7 @@ public class Evento {
         return "EVENTO "
                 + "\nID do evento: " + idEvento
                 + "\nData: " + data.format(fmt)
+                + "\nHorário: " + horario
                 + "\nTema: " + tema
                 + "\nValor: " + valor
                 + "\n" + cliente;

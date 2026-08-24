@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class Programa {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DominioDeExcecao {
 
         Locale.setDefault(Locale.US);
 
@@ -36,11 +36,10 @@ public class Programa {
             System.out.println("=================================================");
             System.out.print("Escolha uma opção: ");
 
+
+            opcao = sc.nextInt();
+            sc.nextLine();
             try {
-
-                opcao = sc.nextInt();
-                sc.nextLine();
-
                 switch (opcao) {
 
                     case 1:
@@ -65,6 +64,8 @@ public class Programa {
                 System.out.println("\nErro: digite apenas números.");
                 sc.nextLine();
                 opcao = -1;
+            } catch (DominioDeExcecao erro) {
+                System.out.println("\nErro: " + erro.getMessage());
             }
 
         } while (opcao != 0);
@@ -72,7 +73,7 @@ public class Programa {
         sc.close();
     }
 
-    private static void menuClientes(Scanner sc, Sistema sistema) {
+    private static void menuClientes(Scanner sc, Sistema sistema) throws DominioDeExcecao {
 
         int opcao;
 
@@ -116,7 +117,12 @@ public class Programa {
                         break;
 
                     case 3:
-                        sistema.buscaPorMenu();
+                        Cliente clienteEncontrado = sistema.buscaPorMenu();
+
+                        if (clienteEncontrado != null){
+                            System.out.println("\n==================== CLIENTE ENCONTRADO =====================");
+                            System.out.println(clienteEncontrado);
+                        }
                         break;
 
                     case 4:
@@ -146,7 +152,7 @@ public class Programa {
         } while (opcao != 0);
     }
 
-    private static void menuEventos(Scanner sc, Sistema sistema) {
+    private static void menuEventos(Scanner sc, Sistema sistema) throws DominioDeExcecao {
 
         int opcao;
 
@@ -171,11 +177,7 @@ public class Programa {
                 switch (opcao) {
 
                     case 1:
-                        try {
-                            sistema.cadastrarEvento();
-                        } catch (DominioDeExcecao erro) {
-                            System.out.println("Erro: " + erro.getMessage());
-                        }
+                        sistema.cadastrarEvento();
                         break;
 
                     case 2:
@@ -187,11 +189,7 @@ public class Programa {
                         break;
 
                     case 4:
-                        try {
-                            sistema.alterarEvento();
-                        } catch (DominioDeExcecao erro) {
-                            System.out.println("Erro: " + erro.getMessage());
-                        }
+                        sistema.alterarEvento();
                         break;
 
                     case 5:

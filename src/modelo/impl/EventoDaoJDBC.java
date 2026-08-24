@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,17 +21,18 @@ public class EventoDaoJDBC implements EventoDao {
     public void inserir(Evento evento) {
         String sql = """
                 INSERT INTO evento
-                (id_evento, data, tema, valor, cliente_id)
-                VALUES (?, ?, ?, ?, ?)
+                (id_evento, data, horario, tema, valor, cliente_id)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
         try (Connection conexao = Conexao.getConnection();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setString(1, evento.getIdEvento());
             comando.setDate(2, java.sql.Date.valueOf(evento.getData())); //converte o LocalDate do Java para o tipo DATE que o MySQL entende.
-            comando.setString(3, evento.getTema());
-            comando.setDouble(4, evento.getValor());
-            comando.setInt(5, evento.getCliente().getId());
+            comando.setTime(3, java.sql.Time.valueOf(evento.getHorario())); //converte o LocalTime do Java para o tipo TIME que o MySQL entende.
+            comando.setString(4, evento.getTema());
+            comando.setDouble(5, evento.getValor());
+            comando.setInt(6, evento.getCliente().getId());
 
             comando.executeUpdate();
 
@@ -42,19 +45,20 @@ public class EventoDaoJDBC implements EventoDao {
     public void atualizar(Evento evento) {
 
         String sql = """
-            UPDATE evento
-            SET data = ?, tema = ?, valor = ?, cliente_id = ?
-            WHERE id_evento = ?
-            """;
+                UPDATE evento
+                SET data = ?, horario = ?, tema = ?, valor = ?, cliente_id = ?
+                WHERE id_evento = ?
+                """;
 
         try (Connection conexao = Conexao.getConnection();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setDate(1, java.sql.Date.valueOf(evento.getData()));
-            comando.setString(2, evento.getTema());
-            comando.setDouble(3, evento.getValor());
-            comando.setInt(4, evento.getCliente().getId());
-            comando.setString(5, evento.getIdEvento());
+            comando.setTime(2, java.sql.Time.valueOf(evento.getHorario()));
+            comando.setString(3, evento.getTema());
+            comando.setDouble(4, evento.getValor());
+            comando.setInt(5, evento.getCliente().getId());
+            comando.setString(6, evento.getIdEvento());
 
             comando.executeUpdate();
 
@@ -85,6 +89,7 @@ public class EventoDaoJDBC implements EventoDao {
         String sql = """
                 SELECT evento.id_evento,
                 evento.data,
+                evento.horario,
                 evento.tema,
                 evento.valor,
                 cliente.id AS cliente_id,
@@ -129,6 +134,7 @@ public class EventoDaoJDBC implements EventoDao {
                     return new Evento(
                             resultado.getString("id_evento"),
                             resultado.getDate("data").toLocalDate(),
+                            resultado.getTime("horário").toLocalTime(),
                             resultado.getString("tema"),
                             resultado.getDouble("valor"),
                             cliente
@@ -150,6 +156,7 @@ public class EventoDaoJDBC implements EventoDao {
         String sql = """
                 SELECT evento.id_evento,
                 evento.data,
+                evento.horario,
                 evento.tema,
                 evento.valor,
                 cliente.id AS cliente_id,
@@ -193,6 +200,7 @@ public class EventoDaoJDBC implements EventoDao {
                 Evento evento = new Evento(
                         resultado.getString("id_evento"),
                         resultado.getDate("data").toLocalDate(),
+                        resultado.getTime("horario").toLocalTime(),
                         resultado.getString("tema"),
                         resultado.getDouble("valor"),
                         cliente
@@ -211,19 +219,19 @@ public class EventoDaoJDBC implements EventoDao {
     }
 
     @Override
-    public String gerarProximoId(){
+    public String gerarProximoId() {
         String sql = """
                 SELECT MAX(CAST(SUBSTRING(id_evento, 3) AS UNSIGNED))
                 FROM evento
                 """;
         try (Connection conexao = Conexao.getConnection();
-            PreparedStatement comando = conexao.prepareStatement(sql);
-            ResultSet resultado = comando.executeQuery()){
+             PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet resultado = comando.executeQuery()) {
 
-            if (resultado.next()){
+            if (resultado.next()) {
                 int maiorId = resultado.getInt(1);
 
-                if (resultado.wasNull()){
+                if (resultado.wasNull()) {
                     maiorId = 0;
                 }
                 return String.format("EV%03d", maiorId + 1);
@@ -232,9 +240,35 @@ public class EventoDaoJDBC implements EventoDao {
 
             return "EV))!";
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
 
+    }
+
+    @Override
+    public boolean existeEventoNaDataEHorario(LocalDate data, LocalTime horario) {
+        String sql = """
+                SELECT COUNT(*) FROM evento 
+                WHERE data = ?
+                AND horario = ?
+                """;
+
+        try (Connection conexao = Conexao.getConnection();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setDate(1, java.sql.Date.valueOf(data));
+            comando.setTime(2, java.sql.Time.valueOf(horario));
+
+            try (ResultSet resultado = comando.executeQuery()) {
+
+                resultado.next();
+
+                return resultado.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 }

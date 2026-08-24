@@ -2,18 +2,19 @@ package modelo.servicos;
 
 import modelo.dao.EventoDao;
 import modelo.entidades.Cliente;
-import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
+import modelo.entidades.Evento;
 import modelo.impl.EventoDaoJDBC;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class EventoService {
 
     private EventoDao eventoDao = new EventoDaoJDBC();
 
-    public Evento cadastrarEvento(LocalDate data, String tema, double valor, Cliente cliente) throws DominioDeExcecao {
+    public Evento cadastrarEvento(LocalDate data, LocalTime horario, String tema, double valor, Cliente cliente) throws DominioDeExcecao {
 
         if (valor <= 0) {
             throw new DominioDeExcecao("O valor do evento deve ser maior que zero.");
@@ -21,7 +22,7 @@ public class EventoService {
 
         String idEvento = eventoDao.gerarProximoId();
 
-        Evento novoEvento = new Evento(idEvento, data, tema, valor, cliente);
+        Evento novoEvento = new Evento(idEvento, data, horario, tema, valor, cliente);
 
         eventoDao.inserir(novoEvento);
 
@@ -50,5 +51,9 @@ public class EventoService {
         }
 
         return encontrado;
+    }
+
+    public boolean existeEventoNaDataEHorario(LocalDate data, LocalTime horario){
+        return eventoDao.existeEventoNaDataEHorario(data, horario);
     }
 }
