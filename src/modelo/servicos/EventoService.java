@@ -56,4 +56,10 @@ public class EventoService {
     public boolean existeEventoNaDataEHorario(LocalDate data, LocalTime horario){
         return eventoDao.existeEventoNaDataEHorario(data, horario);
     }
+
+    public boolean existeOutroEventoNaDataEHorario(String idEvento, LocalDate data, LocalTime horario){
+        return eventoDao.existeOutroEventoNaDataEHorario(idEvento, data, horario);
+    }
+
+
 }

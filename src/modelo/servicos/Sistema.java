@@ -1,9 +1,11 @@
 package modelo.servicos;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -107,8 +109,8 @@ public class Sistema {
         }
     }
 
-    private double lerValor(){
-        while (true){
+    private double lerValor() {
+        while (true) {
             System.out.print("Valor: ");
 
             String entrada = sc.nextLine().trim();
@@ -116,14 +118,14 @@ public class Sistema {
             try {
                 double valor = Double.parseDouble(entrada);
 
-                if (valor <= 0){
+                if (valor <= 0) {
                     System.out.println("O valor deve ser maior que zero.");
                     continue;
                 }
 
                 return valor;
 
-            }catch(NumberFormatException erro){
+            } catch (NumberFormatException erro) {
                 System.out.println("Valor inválido. Digite apenas números.");
             }
         }
@@ -253,7 +255,7 @@ public class Sistema {
 
         boolean existeConflito = eventoService.existeEventoNaDataEHorario(dataFormatada, horario);
 
-        if (existeConflito){
+        if (existeConflito) {
             System.out.println();
             System.out.println("ATENÇÃO!");
             System.out.println("Já existe um evento para: ");
@@ -262,7 +264,7 @@ public class Sistema {
 
             boolean continuar = confirmarAgendamento();
 
-            if(!continuar){
+            if (!continuar) {
                 System.out.println("Agendamento cancelado.");
                 return;
             }
@@ -295,6 +297,7 @@ public class Sistema {
             System.out.println();
             System.out.println("ID: " + evento.getIdEvento());
             System.out.println("Data: " + evento.getData().format(fmt));
+            System.out.println("Horário: " + evento.getHorario());
             System.out.println("Tema: " + evento.getTema());
             System.out.printf("Valor: R$ %.2f%n", evento.getValor());
 
@@ -326,6 +329,7 @@ public class Sistema {
         System.out.println("Evento encontrado:");
         System.out.println("ID: " + evento.getIdEvento());
         System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Horário: " + evento.getHorario());
         System.out.println("Tema: " + evento.getTema());
         System.out.printf("Valor: R$ %.2f%n", evento.getValor());
         System.out.println("Cliente: " + evento.getCliente().getNome());
@@ -453,6 +457,7 @@ public class Sistema {
         System.out.println("\nEvento encontrado!");
         System.out.println("ID: " + evento.getIdEvento());
         System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Horário: " + evento.getHorario());
         System.out.println("Tema: " + evento.getTema());
         System.out.println("Valor: R$ " + evento.getValor());
 
@@ -483,14 +488,16 @@ public class Sistema {
         System.out.println("\nEvento encontrado:");
         System.out.println("ID: " + evento.getIdEvento());
         System.out.println("Data: " + evento.getData().format(fmt));
+        System.out.println("Horário: " + evento.getHorario());
         System.out.println("Tema: " + evento.getTema());
         System.out.println("Valor: R$ " + evento.getValor());
 
         System.out.println("\nO que deseja alterar?");
         System.out.println("1 - Data");
-        System.out.println("2 - Tema");
-        System.out.println("3 - Valor");
-        System.out.println("4 - Voltar");
+        System.out.println("2 - Horário");
+        System.out.println("3 - Tema");
+        System.out.println("4 - Valor");
+        System.out.println("0 - Voltar");
         System.out.print("Opção: ");
 
         int opcao = sc.nextInt();
@@ -503,7 +510,7 @@ public class Sistema {
             case 1:
                 while (true) {
                     System.out.print("Nova data (dd/MM/aaaa): ");
-                    String data = sc.nextLine();
+                    String data = sc.nextLine().trim();
 
                     try {
                         LocalDate novaData = LocalDate.parse(data, fmt);
@@ -512,11 +519,33 @@ public class Sistema {
                             System.out.println(
                                     "A data do evento deve ser posterior à data de hoje."
                             );
-                        } else {
-                            evento.setData(novaData);
-                            alterado = true;
-                            break;
+                            continue;
                         }
+
+                        boolean existeConflito =
+                                eventoService.existeOutroEventoNaDataEHorario(
+                                        evento.getIdEvento(), novaData, evento.getHorario());
+
+                        if (existeConflito) {
+                            System.out.println();
+                            System.out.println("ATENÇÃO");
+                            System.out.println("Já existe outro evento nesta data e horário.");
+
+                            System.out.println("Data: " + novaData.format(fmt));
+                            System.out.println("Horário: " + evento.getHorario());
+
+                            boolean continuar = confirmarAgendamento();
+
+                            if (!continuar) {
+                                System.out.println("Alteração cancelada.");
+                                break;
+                            }
+
+                        }
+
+                        evento.setData(novaData);
+                        alterado = true;
+                        break;
 
                     } catch (DateTimeParseException e) {
                         System.out.println(
@@ -525,22 +554,47 @@ public class Sistema {
                     }
                 }
                 break;
-
             case 2:
+                LocalTime novoHorario = lerHorario();
+
+                boolean existeConflito =
+                        eventoService.existeOutroEventoNaDataEHorario(evento.getIdEvento(), evento.getData(), novoHorario);
+
+                if (existeConflito) {
+                    System.out.println();
+                    System.out.println("ATENÇÃO");
+                    System.out.println("Já existe outro evento nesta data e horário.");
+                    System.out.println("Data: " + evento.getData().format(fmt));
+                    System.out.println("Horário: " + novoHorario);
+
+                    boolean continuar = confirmarAgendamento();
+
+                    if (!continuar) {
+                        System.out.println("Alteração cancelada.");
+                        break;
+                    }
+
+                }
+
+                evento.setHorario(novoHorario);
+                alterado = true;
+                break;
+
+            case 3:
                 String novoTema = lerCampoObrigatorio("Novo Tema: ");
 
                 evento.setTema(novoTema);
                 alterado = true;
                 break;
 
-            case 3:
+            case 4:
                 double novoValor = lerValor();
 
                 evento.setValor(novoValor);
                 alterado = true;
                 break;
 
-            case 4:
+            case 0:
                 System.out.println("Alteração cancelada.");
                 break;
 

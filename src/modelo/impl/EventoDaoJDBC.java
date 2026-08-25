@@ -271,4 +271,31 @@ public class EventoDaoJDBC implements EventoDao {
             throw new DbException(e.getMessage());
         }
     }
+
+    @Override
+    public boolean existeOutroEventoNaDataEHorario(String idEvento, LocalDate data, LocalTime horario) {
+        String sql = """
+                SELECT COUNT(*) FROM evento
+                WHERE data = ?
+                AND horario = ?
+                AND id_evento <> ?
+                """;
+
+        try (Connection conexao = Conexao.getConnection();
+            PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setDate(1, java.sql.Date.valueOf(data));
+            comando.setTime(2, java.sql.Time.valueOf(horario));
+            comando.setString(3, idEvento);
+            try (ResultSet resultado = comando.executeQuery()) {
+                if (resultado.next()) {
+                    return resultado.getInt(1) > 0;
+                }
+            }
+
+            return false;
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
 }

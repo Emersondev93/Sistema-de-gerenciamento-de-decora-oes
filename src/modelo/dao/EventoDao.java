@@ -11,7 +11,7 @@ public interface EventoDao {
 
     void atualizar(Evento evento);
 
-    void excluirPorId(String edEvento);
+    void excluirPorId(String idEvento);
 
     Evento buscaPorId(String idEvento);
 
@@ -20,5 +20,7 @@ public interface EventoDao {
     String gerarProximoId();
 
     boolean existeEventoNaDataEHorario(LocalDate data, LocalTime horario);
+
+    boolean existeOutroEventoNaDataEHorario(String idEvento, LocalDate data, LocalTime horario);
 
 }
