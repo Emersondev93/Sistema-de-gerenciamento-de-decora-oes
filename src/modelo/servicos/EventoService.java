@@ -16,10 +16,6 @@ public class EventoService {
 
     public Evento cadastrarEvento(LocalDate data, LocalTime horario, String tema, double valor, Cliente cliente) throws DominioDeExcecao {
 
-        if (valor <= 0) {
-            throw new DominioDeExcecao("O valor do evento deve ser maior que zero.");
-        }
-
         String idEvento = eventoDao.gerarProximoId();
 
         Evento novoEvento = new Evento(idEvento, data, horario, tema, valor, cliente);

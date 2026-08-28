@@ -5,10 +5,10 @@ import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +18,10 @@ public class Sistema {
     private EventoService eventoService = new EventoService();
     private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private EntradaUsuario entrada = new EntradaUsuario(sc);
+
+    public Sistema(EntradaUsuario entrada) {
+        this.entrada = entrada;
+    }
 
     public void cadastrarCliente() throws DominioDeExcecao {
         System.out.println("================CADASTRAR CLIENTE================ ");
@@ -39,29 +43,26 @@ public class Sistema {
     }
 
     public Cliente buscaPorMenu() {
+        int opcao;
         System.out.println("Buscar cliente - Digite o número que corresponde ao tipo de busca: ");
         System.out.println("1 - Busca por ID.\n2 - Busca por nome. \n3 - Busca por telefone.");
-        System.out.print("Opção de busca: ");
-        int opcao = sc.nextInt();
-        sc.nextLine();
+        opcao = entrada.lerInteiro("Opção de busca: ");
 
         Cliente encontrado = null;
 
         switch (opcao) {
             case 1:
-                System.out.print("Digite o ID do cliente: ");
-                int idBusca = sc.nextInt();
-                sc.nextLine();
+                int idBusca = entrada.lerInteiro("Digite o ID do cliente: ");
                 encontrado = clienteService.buscarPorId(idBusca);
                 break;
             case 2:
-                System.out.print("Digite o nome: ");
-                String nomeBusca = sc.nextLine();
+                String nomeBusca = entrada.lerCampoObrigatorio("Digite o nome do cliente: ");
 
                 List<Cliente> clientesEncontrados = clienteService.buscarPorNome(nomeBusca);
 
                 if (clientesEncontrados.isEmpty()) {
                     System.out.println("Nenhum cliente encontrado. ");
+
                 } else if (clientesEncontrados.size() == 1) {
                     encontrado = clientesEncontrados.get(0);
                 } else {
@@ -72,17 +73,14 @@ public class Sistema {
                                 + " - Nome: " + cliente.getNome()
                                 + " - Telefone: " + cliente.getTelefone());
                     }
-                    System.out.println("\nDigite o ID do cliente desejado: ");
-                    int idEscolhido = sc.nextInt();
-                    sc.nextLine();
+                    int idEscolhido = entrada.lerInteiro("Digite o ID do cliente desejado: ");
                     encontrado = clienteService.buscarPorId(idEscolhido);
                 }
 
                 break;
 
             case 3:
-                System.out.print("Digite o telefone: ");
-                String telefoneBusca = sc.nextLine();
+                String telefoneBusca = entrada.lerTelefone();
                 encontrado = clienteService.buscarPorTelefone(telefoneBusca);
                 break;
             default:
@@ -97,9 +95,7 @@ public class Sistema {
 
     public void removerCliente() {
         System.out.println("==========EXCLUIR CADASTRO==========");
-        System.out.print("Digite o ID do cliente: ");
-        int idRemover = sc.nextInt();
-        sc.nextLine();
+        int idRemover = entrada.lerInteiro("Digite o ID do cliente: ");
 
         Cliente removido = clienteService.removerCliente(idRemover);
 
@@ -119,25 +115,7 @@ public class Sistema {
             return;
         }
 
-        LocalDate dataFormatada = null;
-        boolean validacao = false;
-
-        do {
-            System.out.print("Data do evento (dd/MM/aaaa): ");
-            String data = sc.nextLine().trim();
-            try {
-                dataFormatada = LocalDate.parse(data, fmt);
-            } catch (DateTimeParseException erro) {
-                System.out.println("Data em formato inválido. Use dd/MM/aaaa.");
-                continue;
-            }
-            if (dataFormatada.isBefore(LocalDate.now())) {
-                System.out.println("A data do evento deve ser posterior a data de hoje.");
-            } else {
-                validacao = true;
-            }
-        }
-        while (!validacao);
+        LocalDate dataFormatada = entrada.lerData();
 
         LocalTime horario = entrada.lerHorario();
 
@@ -182,13 +160,7 @@ public class Sistema {
 
         for (Evento evento : eventos) {
 
-            System.out.println();
-            System.out.println("ID: " + evento.getIdEvento());
-            System.out.println("Data: " + evento.getData().format(fmt));
-            System.out.println("Horário: " + evento.getHorario());
-            System.out.println("Tema: " + evento.getTema());
-            System.out.printf("Valor: R$ %.2f%n", evento.getValor());
-
+            exibirEvento(evento);
             Cliente cliente = evento.getCliente();
 
             System.out.println("Cliente: " + cliente.getNome());
@@ -203,8 +175,7 @@ public class Sistema {
     public void removerEvento() {
 
         System.out.println("================ CANCELAR AGENDAMENTO ================");
-        System.out.print("Digite o ID do evento: ");
-        String idRemover = sc.next();
+        String idRemover = entrada.lerCampoObrigatorio("Digite o ID do evento: ");
 
         Evento evento = eventoService.buscarPorId(idRemover);
 
@@ -215,21 +186,15 @@ public class Sistema {
 
         System.out.println();
         System.out.println("Evento encontrado:");
-        System.out.println("ID: " + evento.getIdEvento());
-        System.out.println("Data: " + evento.getData().format(fmt));
-        System.out.println("Horário: " + evento.getHorario());
-        System.out.println("Tema: " + evento.getTema());
-        System.out.printf("Valor: R$ %.2f%n", evento.getValor());
-        System.out.println("Cliente: " + evento.getCliente().getNome());
+        exibirEvento(evento);
 
         System.out.println();
         System.out.println("Deseja realmente cancelar este agendamento?");
         System.out.println("1 - Sim");
         System.out.println("2 - Não");
-        System.out.print("Escolha uma opção: ");
 
-        int opcao = sc.nextInt();
-        sc.nextLine();
+
+        int opcao = entrada.lerInteiro("Escolha uma opção: ");
 
         if (opcao == 1) {
 
@@ -249,19 +214,17 @@ public class Sistema {
         }
     }
 
-    public void alterarDadosCliente() {
+    public void alterarDadosCliente() throws DominioDeExcecao {
         System.out.println("===================ALTERAR INFORMAÇÕES DO CLIENTE==================");
-        System.out.print("Digite o ID do cliente para alterar suas informações: ");
-        int alterarDados = sc.nextInt();
-        sc.nextLine();
+        int idcliente = entrada.lerInteiro("Digite o ID do cliente para alterar suas informações: ");
 
-        Cliente c = clienteService.buscarPorId(alterarDados);
-        if (c == null) {
+        Cliente cliente = clienteService.buscarPorId(idcliente);
+        if (cliente == null) {
             System.out.println("Não foi encontrado cliente com este ID.");
             return;
         }
 
-        System.out.println("Alterar informações de " + c.getNome() + " ID - " + c.getId());
+        System.out.println("Alterar informações de " + cliente.getNome() + " ID - " + cliente.getId());
         System.out.println("Escolha informação a ser alterada: " +
                 "\n1 - Nome " +
                 "\n2 - Telefone" +
@@ -270,70 +233,73 @@ public class Sistema {
                 "\n5 - Bairro" +
                 "\n6 - Cidade" +
                 "\n7 - Cep" +
-                "\n8 - Voltar");
-        System.out.print("Digite o número do campo que deseja alterar: ");
-        int opcao = sc.nextInt();
-        sc.nextLine();
-
+                "\n8 - Salvar alterações"+
+                "\n0 - Voltar");
+        int opcao;
         boolean alterado = false;
-        switch (opcao) {
-            case 1:
-                System.out.println("Nome atual: " + c.getNome());
-                System.out.print("Novo nome: ");
-                c.setNome(sc.nextLine());
-                alterado = true;
-                break;
-            case 2:
-                System.out.println("Telefone atual: " + c.getTelefone());
-                System.out.print("Novo telefone: ");
-                c.setTelefone(sc.nextLine());
-                alterado = true;
-                break;
-            case 3:
-                System.out.println("Rua atual: " + c.getEndereco().getRua());
-                System.out.print("Nova rua: ");
-                c.getEndereco().setRua(sc.nextLine());
-                alterado = true;
-                break;
-            case 4:
-                System.out.println("Número atual: " + c.getEndereco().getNumero());
-                System.out.print("Novo número: ");
-                c.getEndereco().setNumero(sc.nextLine());
-                alterado = true;
-                break;
-            case 5:
-                System.out.println("Bairro atual: " + c.getEndereco().getBairro());
-                System.out.print("Novo bairro: ");
-                c.getEndereco().setBairro(sc.nextLine());
-                alterado = true;
-                break;
-            case 6:
-                System.out.println("Cidade atual: " + c.getEndereco().getCidade());
-                System.out.print("Nova cidade: ");
-                c.getEndereco().setCidade(sc.nextLine());
-                alterado = true;
-                break;
-            case 7:
-                System.out.println("Cep atual: " + c.getEndereco().getCep());
-                System.out.print("Novo cep: ");
-                c.getEndereco().setCep(sc.nextLine());
-                alterado = true;
-                break;
-            case 8:
-                break;
-            default:
-                System.out.println("Opção inválida.");
-        }
-        if (alterado) {
-            clienteService.atualizarCliente(c);
-            System.out.println("Alterações feitas com sucesso!");
-        }
+
+        do {
+            opcao = entrada.lerInteiro("Digite o número do campo que deseja alterar: ");
+
+
+            switch (opcao) {
+                case 1:
+                    System.out.println("Nome atual: " + cliente.getNome());
+                    cliente.setNome(entrada.lerCampoObrigatorio("Novo nome: "));
+                    alterado = true;
+                    break;
+                case 2:
+                    System.out.println("Telefone atual: " + cliente.getTelefone());
+                    cliente.setTelefone(entrada.lerTelefone());
+                    alterado = true;
+                    break;
+                case 3:
+                    System.out.println("Rua atual: " + cliente.getEndereco().getRua());
+                    cliente.getEndereco().setRua(entrada.lerCampoObrigatorio("Nova rua: "));
+                    alterado = true;
+                    break;
+                case 4:
+                    System.out.println("Número atual: " + cliente.getEndereco().getNumero());
+                    cliente.getEndereco().setNumero(entrada.lerCampoObrigatorio("Novo número: "));
+                    alterado = true;
+                    break;
+                case 5:
+                    System.out.println("Bairro atual: " + cliente.getEndereco().getBairro());
+                    cliente.getEndereco().setBairro(entrada.lerCampoObrigatorio("Novo bairro: "));
+                    alterado = true;
+                    break;
+                case 6:
+                    System.out.println("Cidade atual: " + cliente.getEndereco().getCidade());
+                    cliente.getEndereco().setCidade(entrada.lerCampoObrigatorio("Nova cidade: "));
+                    alterado = true;
+                    break;
+                case 7:
+                    System.out.println("Cep atual: " + cliente.getEndereco().getCep());
+                    cliente.getEndereco().setCep(entrada.lerCep());
+                    alterado = true;
+                    break;
+                case 8:
+                    if (alterado){
+                        clienteService.atualizarCliente(cliente);
+                        System.out.println("Alterações salvas com sucesso!");
+                    }else {
+                        System.out.println("Nenhuma alteração foi realizada.");
+                    }
+                    break;
+                case 0:
+                    System.out.println("Alteração cancelada.");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+            }
+
+        }while(opcao != 0 && opcao != 8);
+
     }
 
     public void buscarEvento() {
         System.out.println("=============== BUSCAR DECORAÇÃO ================");
-        System.out.println("Digite o ID do evento: ");
-        String id = sc.nextLine();
+        String id = entrada.lerCampoObrigatorio("Digite o ID do evento: ");
 
         Evento evento = eventoService.buscarPorId(id);
 
@@ -343,20 +309,10 @@ public class Sistema {
         }
 
         System.out.println("\nEvento encontrado!");
-        System.out.println("ID: " + evento.getIdEvento());
-        System.out.println("Data: " + evento.getData().format(fmt));
-        System.out.println("Horário: " + evento.getHorario());
-        System.out.println("Tema: " + evento.getTema());
-        System.out.println("Valor: R$ " + evento.getValor());
+        exibirEvento(evento);
 
-        Cliente cliente = evento.getCliente();
-
-        System.out.println("\nCliente: ");
-        System.out.println("ID: " + cliente.getId());
-        System.out.println("Nome: " + cliente.getNome());
-        System.out.println("Telefone: " + cliente.getTelefone());
-
-        System.out.println("Endereço: " + cliente.getEndereco());
+        System.out.println("\nCliente:");
+        exibirCliente(evento.getCliente());
 
     }
 
@@ -364,8 +320,7 @@ public class Sistema {
 
         System.out.println();
         System.out.println("=============== ALTERAR DECORAÇÃO ===============");
-        System.out.print("Digite o ID do evento: ");
-        String id = sc.nextLine();
+        String id = entrada.lerCampoObrigatorio("Digite o ID do evento: ");
 
         Evento evento = eventoService.buscarPorId(id);
 
@@ -374,15 +329,21 @@ public class Sistema {
             return;
         }
 
+        LocalDate novaData = evento.getData();
+        LocalTime novoHorario = evento.getHorario();
+        String novoTema = evento.getTema();
+        double novoValor = evento.getValor();
+
         int opcao;
+        boolean alteracoesSalvas = false;
 
         do {
-            System.out.println("\nEvento encontrado:");
+            System.out.println("\nEvento em edição:");
             System.out.println("ID: " + evento.getIdEvento());
             System.out.println("Data: " + evento.getData().format(fmt));
             System.out.println("Horário: " + evento.getHorario());
             System.out.println("Tema: " + evento.getTema());
-            System.out.println("Valor: R$ " + evento.getValor());
+            System.out.printf("Valor: R$ %.2f%n", novoValor);
 
             System.out.println("\nO que deseja alterar?");
             System.out.println("1 - Data");
@@ -391,103 +352,65 @@ public class Sistema {
             System.out.println("4 - Valor");
             System.out.println("5 - Salvar alteraçoes");
             System.out.println("0 - Voltar");
-            System.out.print("Opção: ");
 
-            opcao = sc.nextInt();
-            sc.nextLine();
+            opcao = entrada.lerInteiro("Opção: ");
 
             switch (opcao) {
 
                 case 1:
-                    while (true) {
-                        System.out.print("Nova data (dd/MM/aaaa): ");
-                        String data = sc.nextLine().trim();
+                    novaData = entrada.lerData();
 
-                        try {
-
-                            LocalDate novaData = LocalDate.parse(data, fmt);
-
-                            if (novaData.isBefore(LocalDate.now())) {
-                                System.out.println(
-                                        "A data do evento deve ser posterior à data de hoje."
-                                );
-                                continue;
-                            }
-
-                            boolean existeConflito =
-                                    eventoService.existeOutroEventoNaDataEHorario(
-                                            evento.getIdEvento(), novaData, evento.getHorario());
-
-                            if (existeConflito) {
-                                System.out.println();
-                                System.out.println("ATENÇÃO");
-                                System.out.println("Já existe outro evento nesta data e horário.");
-
-                                System.out.println("Data: " + novaData.format(fmt));
-                                System.out.println("Horário: " + evento.getHorario());
-
-                                boolean continuar = entrada.confirmarAgendamento();
-
-                                if (!continuar) {
-                                    System.out.println("Alteração cancelada.");
-                                    break;
-                                }
-
-                            }
-
-                            evento.setData(novaData);
-                            System.out.println("Data alterada.");
-                            break;
-
-                        } catch (DateTimeParseException e) {
-                            System.out.println(
-                                    "Data em formato inválido. Use dd/MM/aaaa."
-                            );
-                        }
-                    }
+                    System.out.println("Data alterada.");
                     break;
                 case 2:
+                    novoHorario = entrada.lerHorario();
 
-                    LocalTime novoHorario = entrada.lerHorario();
+                    System.out.println("Horário alterado. ");
+                    break;
 
+                case 3:
+                    novoTema = entrada.lerCampoObrigatorio("Novo Tema: ");
+
+                    System.out.println("Tema alterado.");
+                    break;
+
+                case 4:
+                    novoValor = entrada.lerValor();
+
+                    System.out.println("Valor alterado.");
+                    break;
+
+                case 5:
                     boolean existeConflito =
-                            eventoService.existeOutroEventoNaDataEHorario(evento.getIdEvento(), evento.getData(), novoHorario);
+                            eventoService.existeOutroEventoNaDataEHorario(
+                                    evento.getIdEvento(),
+                                    novaData,
+                                    novoHorario
+                            );
 
                     if (existeConflito) {
                         System.out.println();
-                        System.out.println("ATENÇÃO");
+                        System.out.println("ATENÇÃO!");
                         System.out.println("Já existe outro evento nesta data e horário.");
-                        System.out.println("Data: " + evento.getData().format(fmt));
+
+                        System.out.println("Data: " + novaData.format(fmt));
+
                         System.out.println("Horário: " + novoHorario);
 
                         boolean continuar = entrada.confirmarAgendamento();
 
                         if (!continuar) {
-                            System.out.println("Alteração cancelada.");
+                            System.out.println("Alterações não foram salvas.");
                             break;
                         }
-
                     }
-
+                    evento.setData(novaData);
                     evento.setHorario(novoHorario);
-                    break;
-
-                case 3:
-                    String novoTema = entrada.lerCampoObrigatorio("Novo Tema: ");
-
                     evento.setTema(novoTema);
-                    System.out.println("Tema alterado.");
-                    break;
-
-                case 4:
-                    double novoValor = entrada.lerValor();
-
                     evento.setValor(novoValor);
-                    System.out.println("Valor alterado.");
-                    break;
-
-                case 5:
                     eventoService.atualizarEvento(evento);
+
+                    alteracoesSalvas = true;
 
                     System.out.println();
                     System.out.println("Alterações salvas com sucesso!");
@@ -500,8 +423,22 @@ public class Sistema {
                 default:
                     System.out.println("Opção inválida.");
             }
-        } while (opcao != 5 && opcao != 0);
+        } while (!alteracoesSalvas && opcao != 0);
     }
 
+    public void exibirCliente(Cliente cliente) {
+        System.out.println("ID: " + cliente.getId());
+        System.out.println("Nome: " + cliente.getNome());
+        System.out.println("Telefone: " + cliente.getTelefone());
+        System.out.println("Endereço: " + cliente.getEndereco());
+    }
+
+    public void exibirEvento(Evento evento) {
+        System.out.println("ID: " + evento.getIdEvento());
+        System.out.println("Data: " + evento.getData());
+        System.out.println("Horário: " + evento.getHorario());
+        System.out.println("Tema: " + evento.getTema());
+        System.out.printf("Valor: R$ %.2f%n", evento.getValor());
+    }
 }
 

@@ -1,5 +1,6 @@
 package aplicacao;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -8,7 +9,7 @@ import java.util.Scanner;
 public class EntradaUsuario {
     private Scanner sc;
 
-    public EntradaUsuario(Scanner sc){
+    public EntradaUsuario(Scanner sc) {
         this.sc = sc;
     }
 
@@ -122,6 +123,47 @@ public class EntradaUsuario {
             }
             System.out.println("Opção inválida. Digite S para sim ou N para não.");
         }
+    }
+
+    public int lerInteiro(String mensagem) {
+
+        while (true) {
+            System.out.print(mensagem);
+
+            String entrada = sc.nextLine().trim();
+
+            try {
+
+                return Integer.parseInt(entrada);
+
+            } catch (NumberFormatException erro) {
+                System.out.println("Valor inválido. Digite apenas números inteiros.");
+            }
+        }
+    }
+
+    public LocalDate lerData() {
+        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        while (true) {
+            System.out.println("Data do evento (dd/MM/aaaa): ");
+            String data = sc.nextLine().trim();
+
+            try {
+                LocalDate dataFormatada = LocalDate.parse(data, formatoData);
+
+                if (dataFormatada.isBefore(LocalDate.now())) {
+                    System.out.println("A data do evento deve ser posterior a data de hoje.");
+
+                    continue;
+                }
+                return dataFormatada;
+
+            } catch (DateTimeParseException erro) {
+                System.out.println("Data em formato inválido. Use dd/MM/aaaa.");
+            }
+        }
+
     }
 
 }
