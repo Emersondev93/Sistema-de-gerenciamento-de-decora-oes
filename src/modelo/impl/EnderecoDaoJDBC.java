@@ -15,12 +15,11 @@ import java.util.List;
 public class EnderecoDaoJDBC implements EnderecoDao {
 
     @Override
-    public void inserir(Endereco endereco) {
+    public void inserir(Endereco endereco, Connection conexao) {
 
-        String sql = " INSERT INTO endereco (rua, numero, bairro, cidade, cep) VALUES (?, ?, ?, ?, ?) ";
+        String sql = "INSERT INTO endereco (rua, numero, bairro, cidade, cep) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conexao = Conexao.getConnection();
-             PreparedStatement comando = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             comando.setString(1, endereco.getRua());
             comando.setString(2, endereco.getNumero());
@@ -42,13 +41,12 @@ public class EnderecoDaoJDBC implements EnderecoDao {
     }
 
     @Override
-    public void atualizar(Endereco endereco) {
+    public void atualizar(Endereco endereco, Connection conexao) {
         String sql = """
                 UPDATE endereco
                 SET rua = ?, numero = ?, bairro = ?, cidade = ?, cep = ?
                 WHERE id = ?""";
-        try (Connection conexao = Conexao.getConnection();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setString(1, endereco.getRua());
             comando.setString(2, endereco.getNumero());
             comando.setString(3, endereco.getBairro());
@@ -64,10 +62,10 @@ public class EnderecoDaoJDBC implements EnderecoDao {
     }
 
     @Override
-    public void excluirPorId(Integer id) {
+    public void excluirPorId(Integer id, Connection conexao) {
         String sql = "DELETE FROM endereco WHERE id = ?";
 
-        try (Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setInt(1, id);
             comando.executeUpdate();
 

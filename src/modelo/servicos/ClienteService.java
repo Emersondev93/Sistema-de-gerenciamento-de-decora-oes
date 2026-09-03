@@ -1,5 +1,7 @@
 package modelo.servicos;
 
+import db.Conexao;
+import db.DbException;
 import excecoes.DominioDeExcecao;
 import modelo.dao.ClienteDao;
 import modelo.dao.EnderecoDao;
@@ -8,11 +10,17 @@ import modelo.entidades.Endereco;
 import modelo.impl.ClienteDaoJDBC;
 import modelo.impl.EnderecoDaoJDBC;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class ClienteService {
-    private ClienteDao clienteDao = new ClienteDaoJDBC();
-    private EnderecoDao enderecoDao = new EnderecoDaoJDBC();
+    private ClienteDao clienteDao;
+    private EnderecoDao enderecoDao;
+
+    public ClienteService(){
+        clienteDao = new ClienteDaoJDBC();
+        enderecoDao = new EnderecoDaoJDBC();
+    }
 
     public Cliente cadastrarCliente(String nome, String telefone, Endereco endereco) throws DominioDeExcecao {
 
@@ -21,14 +29,27 @@ public class ClienteService {
             throw new DominioDeExcecao("Já existe um cliente cadastrado com este telefone.");
         }
 
-        enderecoDao.inserir(endereco);
-
         Cliente cliente = new Cliente(null, nome, telefone, endereco);
 
-        clienteDao.inserir(cliente);
+        try (Connection conexao = Conexao.getConnection()){
 
+            conexao.setAutoCommit(false);
+
+            try{
+                enderecoDao.inserir(endereco, conexao);
+                clienteDao.inserir(cliente, conexao);
+
+                conexao.commit();
+            } catch (Exception e){
+                conexao.rollback();
+                throw e;
+            }
+        }catch (Exception e){
+            throw new DbException((e.getMessage()));
+        }
         return cliente;
     }
+
 
     public List<Cliente> listarClientes() {
         return clienteDao.buscarTodos();
@@ -55,8 +76,24 @@ public class ClienteService {
             );
         }
 
-        clienteDao.atualizar(cliente);
-        enderecoDao.atualizar(cliente.getEndereco());
+        try (Connection conexao = Conexao.getConnection()){
+
+            conexao.setAutoCommit(false);
+
+            try{
+                clienteDao.atualizar(cliente, conexao);
+                enderecoDao.atualizar(cliente.getEndereco(), conexao);
+
+                conexao.commit();
+
+            } catch (Exception e){
+                conexao.rollback();
+                throw e;
+            }
+
+        } catch (Exception e){
+            throw  new DbException(e.getMessage());
+        }
 
     }
 
@@ -66,9 +103,24 @@ public class ClienteService {
         if (encontrado != null) {
             Integer idEndereco = encontrado.getEndereco().getId();
 
-            clienteDao.excluirPorId(id);
+            try (Connection conexao = Conexao.getConnection()){
 
-            enderecoDao.excluirPorId(idEndereco);
+                conexao.setAutoCommit(false);
+
+                try {
+                    enderecoDao.excluirPorId(idEndereco, conexao);
+                    clienteDao.excluirPorId(id, conexao);
+
+                    conexao.commit();
+
+                }catch (Exception e){
+                    conexao.rollback();
+                    throw e;
+                }
+
+            } catch (Exception e) {
+                throw new DbException(e.getMessage());
+            }
         }
         return encontrado;
     }

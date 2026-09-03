@@ -16,12 +16,11 @@ import java.util.List;
 public class ClienteDaoJDBC implements ClienteDao {
 
     @Override
-    public void inserir(Cliente cliente) {
+    public void inserir(Cliente cliente, Connection conexao) {
 
         String sql = "INSERT INTO cliente (nome, telefone, endereco_id) values (?, ?, ?)";
 
-        try (Connection conexao = Conexao.getConnection();
-             PreparedStatement comando = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             comando.setString(1, cliente.getNome());
             comando.setString(2, cliente.getTelefone());
@@ -42,30 +41,30 @@ public class ClienteDaoJDBC implements ClienteDao {
     }
 
     @Override
-    public void atualizar(Cliente cliente) {
+    public void atualizar(Cliente cliente, Connection conexao) {
         String sql = """
                 UPDATE cliente 
                 SET nome = ?, telefone = ?
                 WHERE id = ?""";
 
-        try (Connection conexao = Conexao.getConnection();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setString(1, cliente.getNome());
             comando.setString(2, cliente.getTelefone());
             comando.setInt(3, cliente.getId());
 
             comando.executeUpdate();
+
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
     @Override
-    public void excluirPorId(Integer id) {
+    public void excluirPorId(Integer id, Connection conexao) {
         String sql = "DELETE FROM cliente WHERE id = ?";
 
-        try (Connection conexao = Conexao.getConnection(); PreparedStatement comando = conexao.prepareStatement(sql)) {
+        try (PreparedStatement comando = conexao.prepareStatement(sql)) {
             comando.setInt(1, id);
             comando.executeUpdate();
 

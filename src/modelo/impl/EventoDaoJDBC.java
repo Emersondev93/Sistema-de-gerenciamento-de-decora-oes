@@ -125,7 +125,7 @@ public class EventoDaoJDBC implements EventoDao {
                     );
 
                     Cliente cliente = new Cliente(
-                            resultado.getInt("cliente_Id"),
+                            resultado.getInt("cliente_id"),
                             resultado.getString("nome"),
                             resultado.getString("telefone"),
                             endereco
