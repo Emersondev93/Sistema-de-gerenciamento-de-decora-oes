@@ -98,9 +98,11 @@ public class ClienteService {
     }
 
     public Cliente removerCliente(int id) {
+
         Cliente encontrado = clienteDao.buscaPorId(id);
 
         if (encontrado != null) {
+
             Integer idEndereco = encontrado.getEndereco().getId();
 
             try (Connection conexao = Conexao.getConnection()){
@@ -108,8 +110,9 @@ public class ClienteService {
                 conexao.setAutoCommit(false);
 
                 try {
-                    enderecoDao.excluirPorId(idEndereco, conexao);
+
                     clienteDao.excluirPorId(id, conexao);
+                    enderecoDao.excluirPorId(idEndereco, conexao);
 
                     conexao.commit();
 
