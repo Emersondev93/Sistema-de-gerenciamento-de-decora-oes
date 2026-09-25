@@ -68,13 +68,6 @@ public class ClienteService {
     }
 
     public void atualizarCliente(Cliente cliente)  throws DominioDeExcecao{
-        Cliente clienteComMesmoTelefone = clienteDao.buscaPorTelefone(cliente.getTelefone());
-
-        if(clienteComMesmoTelefone != null && !clienteComMesmoTelefone.getId().equals(cliente.getId())){
-            throw new DominioDeExcecao(
-                    "Já existe outro cliente cadastrado com este telefone."
-            );
-        }
 
         try (Connection conexao = Conexao.getConnection()){
 
@@ -82,11 +75,13 @@ public class ClienteService {
 
             try{
                 clienteDao.atualizar(cliente, conexao);
+
                 enderecoDao.atualizar(cliente.getEndereco(), conexao);
 
                 conexao.commit();
 
             } catch (Exception e){
+
                 conexao.rollback();
                 throw e;
             }

@@ -128,7 +128,7 @@ public class Sistema {
             System.out.println("Data: " + dataFormatada.format(fmt));
             System.out.println("Horário: " + horario);
 
-            boolean continuar = entrada.confirmarAgendamento();
+            boolean continuar = entrada.confirmarOperacao();
 
             if (!continuar) {
                 System.out.println("Agendamento cancelado.");
@@ -233,7 +233,7 @@ public class Sistema {
                 "\n5 - Bairro" +
                 "\n6 - Cidade" +
                 "\n7 - Cep" +
-                "\n8 - Salvar alterações"+
+                "\n8 - Salvar alterações" +
                 "\n0 - Voltar");
         int opcao;
         boolean alterado = false;
@@ -279,10 +279,10 @@ public class Sistema {
                     alterado = true;
                     break;
                 case 8:
-                    if (alterado){
+                    if (alterado) {
                         clienteService.atualizarCliente(cliente);
                         System.out.println("Alterações salvas com sucesso!");
-                    }else {
+                    } else {
                         System.out.println("Nenhuma alteração foi realizada.");
                     }
                     break;
@@ -293,7 +293,7 @@ public class Sistema {
                     System.out.println("Opção inválida.");
             }
 
-        }while(opcao != 0 && opcao != 8);
+        } while (opcao != 0 && opcao != 8);
 
     }
 
@@ -316,6 +316,41 @@ public class Sistema {
 
     }
 
+    private boolean salvarAlteracoesEvento(Evento evento, LocalDate novaData, LocalTime novoHorario, String novoTema, double novoValor) throws DominioDeExcecao {
+        boolean existeConflito =
+                eventoService.existeOutroEventoNaDataEHorario(
+                        evento.getIdEvento(),
+                        novaData,
+                        novoHorario
+                );
+
+        if (existeConflito) {
+            System.out.println();
+            System.out.println("ATENÇÃO!");
+            System.out.println("Já existe outro evento nesta data e horário.");
+
+            System.out.println("Data: " + novaData.format(fmt));
+
+            System.out.println("Horário: " + novoHorario);
+
+            boolean continuar = entrada.confirmarOperacao();
+
+            if (!continuar) {
+                return false;
+            }
+            evento.setData(novaData);
+            evento.setHorario(novoHorario);
+            evento.setTema(novoTema);
+            evento.setValor(novoValor);
+
+            eventoService.atualizarEvento(evento);
+
+            return true;
+
+        }
+        return false;
+    }
+
     public void alterarEvento() throws DominioDeExcecao {
 
         System.out.println();
@@ -336,13 +371,14 @@ public class Sistema {
 
         int opcao;
         boolean alteracoesSalvas = false;
+        boolean possuiAlteracoes = false;
 
         do {
             System.out.println("\nEvento em edição:");
             System.out.println("ID: " + evento.getIdEvento());
-            System.out.println("Data: " + evento.getData().format(fmt));
-            System.out.println("Horário: " + evento.getHorario());
-            System.out.println("Tema: " + evento.getTema());
+            System.out.println("Data: " + novaData.format(fmt));
+            System.out.println("Horário: " + novoHorario);
+            System.out.println("Tema: " + novoTema);
             System.out.printf("Valor: R$ %.2f%n", novoValor);
 
             System.out.println("\nO que deseja alterar?");
@@ -350,7 +386,7 @@ public class Sistema {
             System.out.println("2 - Horário");
             System.out.println("3 - Tema");
             System.out.println("4 - Valor");
-            System.out.println("5 - Salvar alteraçoes");
+            System.out.println("5 - Salvar alterações");
             System.out.println("0 - Voltar");
 
             opcao = entrada.lerInteiro("Opção: ");
@@ -359,69 +395,76 @@ public class Sistema {
 
                 case 1:
                     novaData = entrada.lerData();
+                    possuiAlteracoes = true;
 
                     System.out.println("Data alterada.");
                     break;
                 case 2:
                     novoHorario = entrada.lerHorario();
+                    possuiAlteracoes = true;
 
                     System.out.println("Horário alterado. ");
                     break;
 
                 case 3:
                     novoTema = entrada.lerCampoObrigatorio("Novo Tema: ");
+                    possuiAlteracoes = true;
 
                     System.out.println("Tema alterado.");
                     break;
 
                 case 4:
                     novoValor = entrada.lerValor();
+                    possuiAlteracoes = true;
 
                     System.out.println("Valor alterado.");
                     break;
 
-                case 5:
-                    boolean existeConflito =
-                            eventoService.existeOutroEventoNaDataEHorario(
-                                    evento.getIdEvento(),
-                                    novaData,
-                                    novoHorario
-                            );
+                case 5: {
 
-                    if (existeConflito) {
-                        System.out.println();
-                        System.out.println("ATENÇÃO!");
-                        System.out.println("Já existe outro evento nesta data e horário.");
+                    boolean salvou = salvarAlteracoesEvento(evento, novaData, novoHorario, novoTema, novoValor);
 
-                        System.out.println("Data: " + novaData.format(fmt));
-
-                        System.out.println("Horário: " + novoHorario);
-
-                        boolean continuar = entrada.confirmarAgendamento();
-
-                        if (!continuar) {
-                            System.out.println("Alterações não foram salvas.");
-                            break;
-                        }
+                    if (!salvou) {
+                        System.out.println("Alterações não foram salvas.");
+                        break;
                     }
-                    evento.setData(novaData);
-                    evento.setHorario(novoHorario);
-                    evento.setTema(novoTema);
-                    evento.setValor(novoValor);
-                    eventoService.atualizarEvento(evento);
 
                     alteracoesSalvas = true;
 
                     System.out.println();
                     System.out.println("Alterações salvas com sucesso!");
                     break;
+                }
+                case 0: {
+                    if (possuiAlteracoes) {
+                        boolean salvar = entrada.confirmarSaidaComAlteracoes();
 
-                case 0:
-                    System.out.println("Alteração cancelada.");
+                        if (salvar) {
+                            boolean salvou = salvarAlteracoesEvento(
+                                    evento,
+                                    novaData,
+                                    novoHorario,
+                                    novoTema,
+                                    novoValor
+                            );
+
+                            if (salvou) {
+                                System.out.println("Alterações salvas com sucesso!");
+                            } else {
+                                System.out.println("Alterações não foram salvas.");
+                            }
+                        } else {
+                            System.out.println("Alterações descartadas.");
+                        }
+                    } else {
+                        System.out.println("Alteração cancelada.");
+                    }
+
                     break;
-
+                }
                 default:
                     System.out.println("Opção inválida.");
+
             }
         } while (!alteracoesSalvas && opcao != 0);
     }

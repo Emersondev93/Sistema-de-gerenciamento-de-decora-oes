@@ -228,17 +228,15 @@ public class EventoDaoJDBC implements EventoDao {
              PreparedStatement comando = conexao.prepareStatement(sql);
              ResultSet resultado = comando.executeQuery()) {
 
-            if (resultado.next()) {
-                int maiorId = resultado.getInt(1);
+            resultado.next();
 
-                if (resultado.wasNull()) {
-                    maiorId = 0;
-                }
-                return String.format("EV%03d", maiorId + 1);
+            int maiorId = resultado.getInt(1);
 
+            if (resultado.wasNull()){
+                maiorId = 0;
             }
 
-            return "EV))!";
+            return String.format("EV%03d", maiorId + 1);
 
         } catch (SQLException e) {
             throw new DbException(e.getMessage());

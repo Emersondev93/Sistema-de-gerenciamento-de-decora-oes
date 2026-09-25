@@ -44,14 +44,15 @@ public class ClienteDaoJDBC implements ClienteDao {
     public void atualizar(Cliente cliente, Connection conexao) {
         String sql = """
                 UPDATE cliente 
-                SET nome = ?, telefone = ?
+                SET nome = ?, telefone = ?, endereco_id = ?
                 WHERE id = ?""";
 
         try (PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setString(1, cliente.getNome());
             comando.setString(2, cliente.getTelefone());
-            comando.setInt(3, cliente.getId());
+            comando.setInt(3,cliente.getEndereco().getId());
+            comando.setInt(4, cliente.getId());
 
             comando.executeUpdate();
 

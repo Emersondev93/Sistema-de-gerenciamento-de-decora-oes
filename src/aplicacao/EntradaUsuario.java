@@ -101,9 +101,9 @@ public class EntradaUsuario {
         }
     }
 
-    public boolean confirmarAgendamento() {
+    public boolean confirmarOperacao() {
         while (true) {
-            System.out.println("Deseja agendar mesmo assim? (S/N): ");
+            System.out.println("Deseja continuar mesmo assim? (S/N): ");
 
             String entrada = sc.nextLine().trim();
 
@@ -121,6 +121,31 @@ public class EntradaUsuario {
             if (resposta == 'N') {
                 return false;
             }
+            System.out.println("Opção inválida. Digite S para sim ou N para não.");
+        }
+    }
+
+    public boolean confirmarSaidaComAlteracoes() {
+        while (true) {
+            System.out.println("Há alterações que não foram salvas. Deseja continuar mesmo assim? (S/N): ");
+
+            String entrada = sc.nextLine().trim();
+
+            if (entrada.isEmpty()) {
+                System.out.println("Digite S para sim ou N para não.");
+                continue;
+            }
+
+            char resposta = entrada.toUpperCase().charAt(0);
+
+            if (resposta == 'S') {
+                return true;
+            }
+
+            if (resposta == 'N') {
+                return false;
+            }
+
             System.out.println("Opção inválida. Digite S para sim ou N para não.");
         }
     }

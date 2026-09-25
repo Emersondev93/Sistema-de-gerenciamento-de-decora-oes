@@ -73,7 +73,7 @@ public class Programa {
             System.out.println("5 - Excluir cliente");
             System.out.println("0 - Voltar");
             System.out.println("====================================================");
-            opcao = entrada.lerInteiro("Escolha uma opção.");
+            opcao = entrada.lerInteiro("Escolha uma opção:");
 
             switch (opcao) {
 
