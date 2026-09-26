@@ -193,24 +193,24 @@ public class Sistema {
         System.out.println("1 - Sim");
         System.out.println("2 - Não");
 
+        while (true) {
+            int opcao = entrada.lerInteiro("Escolha uma opção: ");
 
-        int opcao = entrada.lerInteiro("Escolha uma opção: ");
+            if (opcao == 1) {
 
-        if (opcao == 1) {
+                Evento removido = eventoService.removerEvento(idRemover);
 
-            Evento removido = eventoService.removerEvento(idRemover);
+                if (removido != null) {
+                    System.out.println("Agendamento " + removido.getIdEvento() + " cancelado com sucesso!");
+                }
 
-            if (removido != null) {
-                System.out.println("Agendamento " + idRemover + " cancelado com sucesso!");
+            } else if (opcao == 2) {
+                System.out.println("Cancelamento interrompido.");
+                return;
+
+            } else{
+                System.out.println("Opção inválida. Digite 1 para Sim ou 2 para Não.");
             }
-
-        } else if (opcao == 2) {
-
-            System.out.println("Cancelamento interrompido.");
-
-        } else {
-
-            System.out.println("Opção inválida. Cancelamento interrompido.");
         }
     }
 
@@ -425,6 +425,7 @@ public class Sistema {
                     boolean salvou = salvarAlteracoesEvento(evento, novaData, novoHorario, novoTema, novoValor);
 
                     if (!salvou) {
+                        possuiAlteracoes = false;
                         System.out.println("Alterações não foram salvas.");
                         break;
                     }
