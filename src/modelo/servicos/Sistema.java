@@ -172,7 +172,7 @@ public class Sistema {
         return eventos;
     }
 
-    public void removerEvento() {
+    public void removerEvento() throws DominioDeExcecao {
 
         System.out.println("================ CANCELAR AGENDAMENTO ================");
         String idRemover = entrada.lerCampoObrigatorio("Digite o ID do evento: ");
@@ -297,7 +297,7 @@ public class Sistema {
 
     }
 
-    public void buscarEvento() {
+    public void buscarEvento() throws DominioDeExcecao {
         System.out.println("=============== BUSCAR DECORAÇÃO ================");
         String id = entrada.lerCampoObrigatorio("Digite o ID do evento: ");
 

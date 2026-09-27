@@ -39,6 +39,10 @@ public class EventoService {
             throw new DominioDeExcecao("O cliente do evento é obrigatório.");
         }
 
+        if (cliente.getId() == null){
+            throw new DominioDeExcecao("O ID do cliente é obrigatório. ");
+        }
+
         if (clienteDao.buscaPorId(cliente.getId()) == null) {
             throw new DominioDeExcecao("O cliente informado não existe.");
         }
@@ -61,7 +65,7 @@ public class EventoService {
         if (evento == null) {
             throw new DominioDeExcecao("O evento é obrigatório.");
         }
-        if (evento.getIdEvento() == null || evento.getIdEvento().isBlank()){
+        if (evento.getIdEvento() == null || evento.getIdEvento().isBlank()) {
             throw new DominioDeExcecao("O ID do evento é obrigatório.");
         }
         if (eventoDao.buscaPorId(evento.getIdEvento()) == null) {
@@ -70,7 +74,7 @@ public class EventoService {
         if (evento.getCliente() == null) {
             throw new DominioDeExcecao("O cliente do evento é obrigatório.");
         }
-        if(evento.getCliente().getId() == null){
+        if (evento.getCliente().getId() == null) {
             throw new DominioDeExcecao("O ID do cliente é obrigatório.");
         }
         if (clienteDao.buscaPorId(evento.getCliente().getId()) == null) {
@@ -93,12 +97,19 @@ public class EventoService {
         eventoDao.atualizar(evento);
     }
 
-    public Evento buscarPorId(String idEvento) {
+    public Evento buscarPorId(String idEvento) throws DominioDeExcecao {
+
+        if (idEvento == null || idEvento.isBlank()) {
+            throw new DominioDeExcecao("O ID do evento é obrigatório.");
+        }
+
         return eventoDao.buscaPorId(idEvento);
     }
 
-    public Evento removerEvento(String idEvento) {
-
+    public Evento removerEvento(String idEvento) throws DominioDeExcecao {
+        if (idEvento == null || idEvento.isBlank()) {
+            throw new DominioDeExcecao("O ID do evento é obrigatório.");
+        }
         Evento encontrado = buscarPorId(idEvento);
 
         if (encontrado != null) {
@@ -115,6 +126,5 @@ public class EventoService {
     public boolean existeOutroEventoNaDataEHorario(String idEvento, LocalDate data, LocalTime horario) {
         return eventoDao.existeOutroEventoNaDataEHorario(idEvento, data, horario);
     }
-
 
 }
