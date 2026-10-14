@@ -50,7 +50,6 @@ public class ClienteService {
         return cliente;
     }
 
-
     public List<Cliente> listarClientes() {
         return clienteDao.buscarTodos();
     }

@@ -1,10 +1,29 @@
 package modelo.entidades;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
+@Table(name = "cliente")
 public class Cliente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String nome;
     private String telefone;
+    @ManyToOne
+    @JoinColumn(name = "endereco_id")
     private Endereco endereco;
+
+    public Cliente() {
+    }
 
     public Cliente(Integer id, String nome, String telefone, Endereco endereco) {
         this.id = id;
@@ -17,7 +36,9 @@ public class Cliente {
         return id;
     }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getNome() {
         return nome;

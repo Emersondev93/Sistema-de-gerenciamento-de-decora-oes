@@ -66,11 +66,11 @@ public class Programa {
 
             System.out.println();
             System.out.println("================ GERENCIAR CLIENTES ================");
-            System.out.println("1 - Cadastrar cliente");
-            System.out.println("2 - Listar clientes");
-            System.out.println("3 - Buscar cliente");
-            System.out.println("4 - Alterar cliente");
-            System.out.println("5 - Excluir cliente");
+            System.out.println("1 - Cadastrar");
+            System.out.println("2 - Listar");
+            System.out.println("3 - Buscar");
+            System.out.println("4 - Alterar");
+            System.out.println("5 - Excluir");
             System.out.println("0 - Voltar");
             System.out.println("====================================================");
             opcao = entrada.lerInteiro("Escolha uma opção:");
@@ -132,11 +132,11 @@ public class Programa {
 
             System.out.println();
             System.out.println("================ GERENCIAR EVENTOS ================");
-            System.out.println("1 - Agendar decoração");
-            System.out.println("2 - Listar decorações");
-            System.out.println("3 - Buscar decoração");
-            System.out.println("4 - Alterar decoração");
-            System.out.println("5 - Cancelar decoração");
+            System.out.println("1 - Agendar");
+            System.out.println("2 - Listar");
+            System.out.println("3 - Buscar");
+            System.out.println("4 - Alterar");
+            System.out.println("5 - Cancelar");
             System.out.println("0 - Voltar");
             System.out.println("===================================================");
             opcao = entrada.lerInteiro("Escolha uma opção: ");
