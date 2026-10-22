@@ -1,6 +1,13 @@
 package modelo.entidades;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "endereco")
 public class Endereco {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String rua;
     private String numero;
@@ -15,6 +22,9 @@ public class Endereco {
         this.bairro = bairro;
         this.cidade = cidade;
         this.cep = cep;
+    }
+    public Endereco() {
+
     }
 
     public Integer getId() { return id; }
