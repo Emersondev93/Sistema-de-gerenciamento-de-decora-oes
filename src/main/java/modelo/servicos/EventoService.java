@@ -1,4 +1,4 @@
-package modelo.servicos;
+package main.java.modelo.servicos;
 
 import excecoes.DominioDeExcecao;
 import modelo.dao.ClienteDao;

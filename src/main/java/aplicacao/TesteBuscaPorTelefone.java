@@ -1,6 +1,5 @@
 package aplicacao;
 
-import com.sun.tools.javac.Main;
 import modelo.dao.ClienteDao;
 import modelo.entidades.Cliente;
 import modelo.impl.ClienteDaoJDBC;

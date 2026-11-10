@@ -1,7 +1,7 @@
 package aplicacao;
 
 import modelo.entidades.Cliente;
-import modelo.servicos.ClienteService;
+import main.java.modelo.servicos.ClienteService;
 
 public class TesteExcluirCliente {
     public static void main(String[] args) {

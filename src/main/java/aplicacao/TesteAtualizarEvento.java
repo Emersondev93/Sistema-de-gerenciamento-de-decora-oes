@@ -2,7 +2,7 @@ package aplicacao;
 
 import excecoes.DominioDeExcecao;
 import modelo.entidades.Evento;
-import modelo.servicos.EventoService;
+import main.java.modelo.servicos.EventoService;
 
 public class TesteAtualizarEvento {
 

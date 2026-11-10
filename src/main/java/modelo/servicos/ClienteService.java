@@ -1,4 +1,4 @@
-package modelo.servicos;
+package main.java.modelo.servicos;
 
 import db.Conexao;
 import db.DbException;
