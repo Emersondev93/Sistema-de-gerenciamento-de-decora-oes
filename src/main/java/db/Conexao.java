@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class Conexao {
 
-    private static Properties loadProperties() {
+    public static Properties loadProperties() {
         Properties props = new Properties();
         try {
             props.load(new FileInputStream("db.properties"));
