@@ -3,7 +3,7 @@ package aplicacao;
 import excecoes.DominioDeExcecao;
 import modelo.entidades.Cliente;
 import modelo.entidades.Evento;
-import main.java.modelo.servicos.ClienteService;
+import modelo.servicos.ClienteService;
 import main.java.modelo.servicos.EventoService;
 
 import java.time.LocalDate;

@@ -2,7 +2,9 @@ package aplicacao;
 
 import excecoes.DominioDeExcecao;
 import modelo.entidades.Cliente;
-import main.java.modelo.servicos.Sistema;
+import modelo.servicos.ClienteService;
+import modelo.servicos.Sistema;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;

@@ -54,4 +54,5 @@ public class TestePersistenciaJPA {
             fabrica.close();
         }
     }
+
 }

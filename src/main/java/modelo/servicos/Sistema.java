@@ -1,10 +1,11 @@
-package main.java.modelo.servicos;
+package modelo.servicos;
 
 import aplicacao.EntradaUsuario;
 import modelo.entidades.Cliente;
 import modelo.entidades.Endereco;
 import modelo.entidades.Evento;
 import excecoes.DominioDeExcecao;
+import modelo.servicos.ClienteService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,7 +16,7 @@ import java.util.Scanner;
 public class Sistema {
     private Scanner sc = new Scanner(System.in);
     private ClienteService clienteService = new ClienteService();
-    private EventoService eventoService = new EventoService();
+    private main.java.modelo.servicos.EventoService eventoService = new main.java.modelo.servicos.EventoService();
     private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private EntradaUsuario entrada = new EntradaUsuario(sc);
 

@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/maven-v4_0_0.xsd">
-
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>br.com.ProjetoDecoracao</groupId>
-    <artifactId>ProjetoDecoracao</artifactId>
+    <groupId>br.com.projetodecoracao</groupId>
+    <artifactId>projeto-decoracao</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -19,8 +15,7 @@
     </properties>
 
     <dependencies>
-
-        <!--API JPA : fornece @Entity, @Id e outras anotações-->
+        <!-- API JPA: fornece @Entity, @Id e outras anotações -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
@@ -41,6 +36,31 @@
             <version>9.4.0</version>
         </dependency>
 
+        <!-- JUnit 5: framework para testes automatizados -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.13.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito: criação de objetos simulados para testes -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.20.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>
